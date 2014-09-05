@@ -80,17 +80,17 @@ def SCRAPE_VIDEOS(url):
     except:
         pass
 
-    try:       
-        for item in json_source['spotlight']:         
-            BUILD_VIDEO_LINK(item)
-    except:
-        pass
-
     try:
         for item in json_source['showCase']:        
             BUILD_VIDEO_LINK(item)
     except:
         pass
+
+    try:       
+        for item in json_source['spotlight']:         
+            BUILD_VIDEO_LINK(item)
+    except:
+        pass    
 
 
 def BUILD_VIDEO_LINK(item):
