@@ -94,13 +94,22 @@ def SCRAPE_VIDEOS(url):
 
 
 def BUILD_VIDEO_LINK(item):
-    url = item['iosStreamUrl']
+    url = item['iosStreamUrl']    
+    header = { 'Referer' : 'http://stream.golfchannel.com/?pid=15607',
+               'Accept-Encoding' : 'gzip,deflate,sdch',
+               'Accept-Language' : 'en-US,en;q=0.8',
+               'Cookie' : 'hdntl=exp=1410035727~acl=%2f*~hmac=b3d9c10715e1c34dda7d12ab97b4258388369f094093ef21098a82ba47c92e56'}
+    header_encoded = urllib.urlencode(header)
+    #url =  urllib.quote_plus(url+'|')       
+    #full_url = url + '|' + header_encoded 
+
     #url = url.replace('manifest(format=m3u8-aapl-v3)','QualityLevels(3490000)/Manifest(video,format=m3u8-aapl-v3,audiotrack=audio_en_0)')                     
     name = item['title']            
     menu_name = name        
     info = item['info'] 
     if info <> "":
         menu_name = menu_name + " - " + info
+        menu_name = '[COLOR=FF00B7EB]'+menu_name+'[/COLOR]'
     imgurl = "http://hdliveextra-pmd.edgesuite.net/HD/image_sports/mobile/"+item['image']+"_m50.jpg"
     addLink(menu_name,url,name,imgurl,FANART) 
 
