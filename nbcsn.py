@@ -11,75 +11,98 @@ addon_handle = int(sys.argv[1])
 ROOTDIR = xbmcaddon.Addon(id='plugin.video.nbcsnliveextra').getAddonInfo('path')
 FANART = ROOTDIR+"/fanart.jpg"
 ICON = ROOTDIR+"/icon.png"
-#ROOT_URL = 'http://stream.nbcsports.com/data/mobile/upcoming.json'
+ROOT_URL = 'http://stream.nbcsports.com/data/mobile/'
 
 def CATEGORIES():                
     addDir('Live and Upcoming Events','/upcoming',1,ICON,FANART)
-    addDir('Featured','/featured',2,ICON,FANART)
+    addDir('Featured',ROOT_URL+'featured-2013.json',4,ICON,FANART)
+    addDir('On NBC Sports','/replays',3,ICON,FANART)
     #addDir('Live','/Live',0,ICON,FANART)
     
 
-def UPCOMING():            
-    req = urllib2.Request('http://stream.nbcsports.com/data/mobile/upcoming.json')
+def UPCOMING():                
+    #LIVE    
+    SCRAPE_VIDEOS(ROOT_URL+'live.json')
+    #UPCOMING
+    SCRAPE_VIDEOS(ROOT_URL+'upcoming.json')
+
+def GET_ALL_SPORTS():
+    req = urllib2.Request(ROOT_URL+'configuration-2013.json')
+    req.add_header('User-Agent', 'NBCSports/742 CFNetwork/672.0.8 Darwin/14.0.0')
+    response = urllib2.urlopen(req)   
+    json_source = json.load(response)                       
+    response.close()    
+
+    try:
+        for item in json_source['sports']:        
+            code = item['code']
+            name = item['name']                  
+            addDir(name,ROOT_URL+code+'.json',4,ICON,FANART)
+    except:
+        pass
+
+##########################################
+#This has been replaced by GET_ALL_SPORTS
+##########################################
+def REPLAYS():    
+    addDir('Dew Tour',ROOT_URL+'dewtour.json',4,ICON,FANART)    
+    addDir('European Tour',ROOT_URL+'euro-2013.json',4,ICON,FANART)
+    addDir('F1',ROOT_URL+'f1-2013.json',4,ICON,FANART)
+    addDir('Horse Racing',ROOT_URL+'horses-2013.json',4,ICON,FANART)
+    addDir('IndyCar',ROOT_URL+'indy-2013.json',4,ICON,FANART)
+    addDir('Major League Soccer',ROOT_URL+'mls-2013.json',4,ICON,FANART)    
+    addDir('National Dog Show',ROOT_URL+'dogshow-2013.json',4,ICON,FANART)
+    addDir('NFL',ROOT_URL+'nfl.json',4,ICON,FANART)
+    addDir('NHL',ROOT_URL+'nhl-2013.json',4,ICON,FANART)
+    addDir('Notre Dame',ROOT_URL+'nd-2013.json',4,ICON,FANART)
+    addDir('PGA Tour',ROOT_URL+'pga-2013.json',4,ICON,FANART)
+    addDir('Premier League',ROOT_URL+'premier-league.json',4,ICON,FANART)
+    addDir('Pro Motocross',ROOT_URL+'moto-2013.json',4,ICON,FANART)
+    addDir('Tennis',ROOT_URL+'tennis-2013.json',4,ICON,FANART)    
+
+
+def SCRAPE_VIDEOS(url):            
+    req = urllib2.Request(url)
     req.add_header('User-Agent', 'NBCSports/742 CFNetwork/672.0.8 Darwin/14.0.0')
     response = urllib2.urlopen(req)   
     json_source = json.load(response)                       
     response.close()            
-        
-    today_date_nbcsn_format = int(datetime.date.today().strftime("%Y%m%d"))
-    #Get any live video and add it
-    LIVE()
 
-    for item in json_source:        
-        if int(item['start'][0:8]) == today_date_nbcsn_format:
-            url = item['iosStreamUrl']
-            name = item['title']            
-            menu_name = name        
-            info = item['info'] 
-            if info <> "":
-                menu_name = menu_name + " - " + info
-            imgurl = "http://hdliveextra-pmd.edgesuite.net/HD/image_sports/mobile/"+item['image']+"_m50.jpg"
-            addLink(menu_name,url,name,imgurl,FANART) 
+    try:       
+        for item in json_source:         
+            BUILD_VIDEO_LINK(item)
+    except:
+        pass
 
-def FEATURED():            
-    req = urllib2.Request('http://stream.nbcsports.com/data/mobile/featured-2013.json')
-    req.add_header('User-Agent', 'NBCSports/742 CFNetwork/672.0.8 Darwin/14.0.0')
-    response = urllib2.urlopen(req)   
-    json_source = json.load(response)                       
-    response.close()            
-        
-    today_date_nbcsn_format = int(datetime.date.today().strftime("%Y%m%d"))
-    video_source = json_source['replay']
+    try:
+        for item in json_source['replay']:        
+            BUILD_VIDEO_LINK(item)
+    except:
+        pass
 
-    for item in video_source:        
-        url = item['iosStreamUrl']
-        name = item['title']            
-        menu_name = name        
-        info = item['info'] 
-        if info <> "":
-            menu_name = menu_name + " - " + info
-        imgurl = "http://hdliveextra-pmd.edgesuite.net/HD/image_sports/mobile/"+item['image']+"_m50.jpg"
-        addLink(menu_name,url,name,imgurl,FANART) 
+    try:       
+        for item in json_source['spotlight']:         
+            BUILD_VIDEO_LINK(item)
+    except:
+        pass
 
-def LIVE():            
-    req = urllib2.Request('http://stream.nbcsports.com/data/mobile/live.json')
-    req.add_header('User-Agent', 'NBCSports/742 CFNetwork/672.0.8 Darwin/14.0.0')
-    response = urllib2.urlopen(req)   
-    json_source = json.load(response)                       
-    response.close()            
-        
-    today_date_nbcsn_format = int(datetime.date.today().strftime("%Y%m%d"))
-    #video_source = json_source['replay']
+    try:
+        for item in json_source['showCase']:        
+            BUILD_VIDEO_LINK(item)
+    except:
+        pass
 
-    for item in json_source:        
-        url = item['iosStreamUrl']
-        name = item['title']            
-        menu_name = name        
-        info = item['info'] 
-        if info <> "":
-            menu_name = menu_name + " - " + info
-        imgurl = "http://hdliveextra-pmd.edgesuite.net/HD/image_sports/mobile/"+item['image']+"_m50.jpg"
-        addLink(menu_name,url,name,imgurl,FANART) 
+
+def BUILD_VIDEO_LINK(item):
+    url = item['iosStreamUrl']
+    #url = url.replace('manifest(format=m3u8-aapl-v3)','QualityLevels(3490000)/Manifest(video,format=m3u8-aapl-v3,audiotrack=audio_en_0)')                     
+    name = item['title']            
+    menu_name = name        
+    info = item['info'] 
+    if info <> "":
+        menu_name = menu_name + " - " + info
+    imgurl = "http://hdliveextra-pmd.edgesuite.net/HD/image_sports/mobile/"+item['image']+"_m50.jpg"
+    addLink(menu_name,url,name,imgurl,FANART) 
 
 def addLink(name,url,title,iconimage,fanart):
     ok=True
@@ -156,6 +179,11 @@ if mode==None or url==None or len(url)<1:
 elif mode==1:
         UPCOMING()
 elif mode==2:
+        ####NOT USED###
         FEATURED()
-
+elif mode==3:
+        #REPLAYS()
+        GET_ALL_SPORTS()
+elif mode==4:
+        SCRAPE_VIDEOS(url)
 xbmcplugin.endOfDirectory(addon_handle)
