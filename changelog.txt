@@ -1,3 +1,6 @@
+v0.0.3
+- Added ability to set stream quality under settings
+- Changed Full Replay order from newest to oldest
 v0.0.2
 - Remove httplib2 unneeded and was causing errors
 v0.0.1
