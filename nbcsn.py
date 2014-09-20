@@ -60,8 +60,9 @@ def SCRAPE_VIDEOS(url,scrape_type=None):
     response.close()            
 
     if scrape_type == None:
+        #LIVE
         try:       
-            for item in json_source:         
+            for item in json_source:                         
                 BUILD_VIDEO_LINK(item)
         except:
             pass
@@ -95,8 +96,8 @@ def SCRAPE_VIDEOS(url,scrape_type=None):
             pass
 
 
-def BUILD_VIDEO_LINK(item):
-    url = item['iosStreamUrl']    
+def BUILD_VIDEO_LINK(item):    
+    url = item['iosStreamUrl']  
     ##################################################################
     # Inject login cookie - NOT USED CURRENTLY
     ##################################################################
@@ -158,10 +159,14 @@ def BUILD_VIDEO_LINK(item):
     #print current_time
     #print video_time
     #print video_time < current_time
-    #menu_name = '[COLOR=FF00B7EB]'+menu_name+'[/COLOR]'
+    #menu_name = '[COLOR=FF00B7EB]'+menu_name+'[/COLOR]'    
     ##################################################################
 
-    imgurl = "http://hdliveextra-pmd.edgesuite.net/HD/image_sports/mobile/"+item['image']+"_m50.jpg"
+    # Highlight active streams
+    if item['id'] <> 'nbcs_':
+        menu_name = '[COLOR=FF00B7EB]'+menu_name+'[/COLOR]'    
+
+    imgurl = "http://hdliveextra-pmd.edgesuite.net/HD/image_sports/mobile/"+item['image']+"_m50.jpg"    
     addLink(menu_name,url,name,imgurl,FANART) 
 
 def LOGIN():
