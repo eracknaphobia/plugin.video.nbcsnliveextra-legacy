@@ -1,7 +1,7 @@
 import sys
 import xbmcplugin, xbmcgui, xbmcaddon
 import re, os, time
-import urllib, urllib2
+import urllib, urllib2, httplib2
 import json
 import HTMLParser
 import datetime
@@ -145,7 +145,6 @@ def BUILD_VIDEO_LINK(item):
     if info <> "":         
         menu_name = menu_name + " - " + info 
     
-<<<<<<< HEAD
     # Highlight active streams
     current_time =  datetime.datetime.utcnow().strftime('%Y%m%d-%H%M')    
     start_time = item['start']
@@ -158,29 +157,6 @@ def BUILD_VIDEO_LINK(item):
         menu_name = '[COLOR=FF00B7EB]'+menu_name+'[/COLOR]'
     
 
-=======
-    ##################################################################
-    # Date Color codeing - NOT USED CURRENTLY
-    ##################################################################
-    #ex. 20140906-1600
-    #datetime.datetime.utcnow().strftime('%Y%m%d-%H%M')
-    #current_date =  datetime.datetime.utcnow().strftime('%Y%m%d-%H%M')
-    #video_time = item['start']
-    #date = datetime.fromtimestamp(time.mktime(time.strptime(video_time,"%Y%m%d-%H%M"))).strftime(xbmc.getRegion('dateshort'))
-
-    #print str(datetime.datetime.strptime(item['start','%Y%m%d-%H%M'))
-    #print item['start']
-    #print current_time
-    #print video_time
-    #print video_time < current_time
-    #menu_name = '[COLOR=FF00B7EB]'+menu_name+'[/COLOR]'    
-    ##################################################################
-
-    # Highlight active streams
-    if item['id'] <> 'nbcs_':
-        menu_name = '[COLOR=FF00B7EB]'+menu_name+'[/COLOR]'    
-
->>>>>>> origin/master
     imgurl = "http://hdliveextra-pmd.edgesuite.net/HD/image_sports/mobile/"+item['image']+"_m50.jpg"    
     addLink(menu_name,url,name,imgurl,FANART) 
 
@@ -273,8 +249,5 @@ elif mode==3:
         GET_ALL_SPORTS()
 elif mode==4:
         SCRAPE_VIDEOS(url,scrape_type)
-<<<<<<< HEAD
 
-=======
->>>>>>> origin/master
 xbmcplugin.endOfDirectory(addon_handle)
