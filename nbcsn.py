@@ -173,7 +173,8 @@ def BUILD_VIDEO_LINK(item):
     #url = url.replace('golfx/master.m3u8','golfx/'+q_lvl_golf+'/prog.m3u8')       
 
     
-    menu_name = item['title']                
+    menu_name = item['title']
+    name = menu_name                
     info = item['info']     
     # Highlight active streams   
     start_time = item['start']
