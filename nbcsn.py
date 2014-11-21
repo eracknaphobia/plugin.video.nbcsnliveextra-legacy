@@ -85,8 +85,9 @@ def SCRAPE_VIDEOS(url,scrape_type=None):
         #try:       
             #Sort By Start Time
             json_source = sorted(json_source,key=lambda x:x['start'])
-            for item in json_source:                                   
-                BUILD_VIDEO_LINK(item)
+            for item in json_source:        
+                if not item['title'].startswith('CSN'):
+                    BUILD_VIDEO_LINK(item)
         #except:
             #pass
 
