@@ -4,7 +4,9 @@ import re, os, time
 import urllib, urllib2, httplib2
 import json
 import HTMLParser
-import datetime
+import calendar
+from datetime import datetime, timedelta
+import time
 
 
 
@@ -22,6 +24,7 @@ ROOT_URL = 'http://stream.nbcsports.com/data/mobile/'
 #Main settings
 QUALITY = int(settings.getSetting(id="quality"))
 
+
 def CATEGORIES():                
     addDir('Live & Upcoming','/live',1,ICON,FANART)
     addDir('Featured',ROOT_URL+'mcms/prod/nbc-featured.json',2,ICON,FANART)
@@ -29,7 +32,9 @@ def CATEGORIES():
 
 def LIVE():      
     #REFRESH
-    addDir('Refresh List','/refresh',1,ICON,FANART,None,False)          
+    #addDir('Refresh List','',0,ICON,FANART,None,False)   
+    #Add Refresh List Link
+
     #LIVE    
     #SCRAPE_VIDEOS(ROOT_URL+'live.json')
     SCRAPE_VIDEOS(ROOT_URL+'mcms/prod/nbc-live.json')
@@ -40,11 +45,12 @@ def LIVE():
 
 
 def GET_ALL_SPORTS():
-    # This process has changed
-    #This 
+    # This process has changed drastically
+    #Need This 
     #http://link.theplatform.com/s/BxmELC/JYis41t0VJTO?mbr=true&manifest=m3u&feed=Mobile%20App%20-%20NBC%20Sports%20Live%20Extra
-    #Returns This
+    #To get This
     #http://allisports-vh.akamaihd.net/i/HD/video_sports/NBCU_Sports_Group_-_AlliSports/118/775/DT_BK_Skate_Streetstyle_Recap_YT_1411364680363_,140,345,220,90,60,40,20,0k.mp4.csmil/index_1_av.m3u8?null=
+
     #req = urllib2.Request(ROOT_URL+'configuration-2013.json')
     req = urllib2.Request(ROOT_URL+'configuration-2014-RSN-Sections.json')
     req.add_header('User-Agent', 'NBCSports/742 CFNetwork/672.0.8 Darwin/14.0.0')
@@ -59,6 +65,7 @@ def GET_ALL_SPORTS():
             addDir(name,ROOT_URL+'mcms/prod/'+code+'.json',4,ICON,FANART,'ALL')
     except:
         pass
+
 
 def FEATURED(url):
     addDir('Full Replays',url,4,ICON,FANART,"replay")
@@ -164,20 +171,19 @@ def BUILD_VIDEO_LINK(item):
     url = url.replace('manifest(format=m3u8-aapl-v3,filtername=vodcut)','QualityLevels('+q_lvl+')/Manifest(video,format=m3u8-aapl-v3,audiotrack=audio_en_0,filtername=vodcut)')                       
     #url = url.replace('golfx/master.m3u8','golfx/'+q_lvl_golf+'/prog.m3u8')       
 
-   
-    menu_name = item['title']  
     
     name = item['title']            
     menu_name = name       
     
-    info = item['info'] 
-    #if info <> "":         
-        #menu_name = menu_name + " - " + info 
-    
-    try:
-        # Highlight active streams   
-        current_time =  datetime.datetime.utcnow().strftime('%Y%m%d-%H%M')    
-        start_time = item['start']
+    info = item['info']     
+    # Highlight active streams   
+    start_time = item['start']
+    #utc_dt = datetime.strptime(utc_dt, "%Y%m%d-%H%M")
+   
+
+    current_time =  datetime.utcnow().strftime('%Y%m%d-%H%M')   
+
+    try:     
         length = int(item['length'])
         my_time = int(current_time[0:8]+current_time[9:])
         event_start = int(start_time[0:8]+start_time[9:]) 
@@ -188,19 +194,27 @@ def BUILD_VIDEO_LINK(item):
     except:
         pass
     
-    #datetime.datetime.strptime('20140101-1212', "%Y%m%d-%H%M")
-    #datetime.datetime.strptime("21/11/06 16:30", "%d/%m/%y %H:%M")
-    #from datetime import datetime
-    #a = datetime.datetime.strptime('2011-01-01', '%Y-%m-%d')
-    #print a
-    
     imgurl = "http://hdliveextra-pmd.edgesuite.net/HD/image_sports/mobile/"+item['image']+"_m50.jpg"    
-    print url
+   
+
     if url != '':
         addLink(menu_name,url,name,imgurl,FANART) 
     else:
-        addDir(menu_name,'/disabled',-1,imgurl,FANART,None,False)
+        try:
+            start_date = datetime.strptime(start_time, "%Y%m%d-%H%M")
+        except TypeError:
+            start_date = datetime.fromtimestamp(time.mktime(time.strptime(start_time, "%Y%m%d-%H%M")))
+        
+        start_date = datetime.strftime(utc_to_local(start_date),xbmc.getRegion('dateshort')+' '+xbmc.getRegion('time').replace('%H%H','%H').replace(':%S',''))       
+        addDir(menu_name + ' ' + start_date,'/disabled',999,imgurl,FANART,None,False)
 
+
+def utc_to_local(utc_dt):
+    # get integer timestamp to avoid precision lost
+    timestamp = calendar.timegm(utc_dt.timetuple())
+    local_dt = datetime.fromtimestamp(timestamp)
+    assert utc_dt.resolution >= timedelta(microseconds=1)
+    return local_dt.replace(microsecond=utc_dt.microsecond)
 
 def LOGIN():
     req = urllib2.Request(url)
@@ -282,7 +296,7 @@ print "scrape_type:"+str(scrape_type)
 if mode==None or url==None or len(url)<1:
         #print ""                
         CATEGORIES()        
-elif mode==1:
+elif mode==1:        
         LIVE()
 elif mode==2:        
         FEATURED(url)
