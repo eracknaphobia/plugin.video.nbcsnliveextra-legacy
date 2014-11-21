@@ -173,9 +173,7 @@ def BUILD_VIDEO_LINK(item):
     #url = url.replace('golfx/master.m3u8','golfx/'+q_lvl_golf+'/prog.m3u8')       
 
     
-    name = item['title']            
-    menu_name = name       
-    
+    menu_name = item['title']                
     info = item['info']     
     # Highlight active streams   
     start_time = item['start']
@@ -184,21 +182,20 @@ def BUILD_VIDEO_LINK(item):
 
     current_time =  datetime.utcnow().strftime('%Y%m%d-%H%M')   
 
+    length = 0
     try:     
         length = int(item['length'])
-        my_time = int(current_time[0:8]+current_time[9:])
-        event_start = int(start_time[0:8]+start_time[9:]) 
-        event_end = int(current_time[0:8]+current_time[9:])+length
-
-        if my_time >= event_start and my_time <= event_end:
-            menu_name = '[COLOR=FF00B7EB]'+menu_name+'[/COLOR]'
     except:
         pass
+
+    my_time = int(current_time[0:8]+current_time[9:])
+    event_start = int(start_time[0:8]+start_time[9:]) 
+    event_end = int(current_time[0:8]+current_time[9:])+length
     
     imgurl = "http://hdliveextra-pmd.edgesuite.net/HD/image_sports/mobile/"+item['image']+"_m50.jpg"    
    
-
-    if url != '':
+    if url != '' and my_time >= event_start and my_time <= event_end:
+        menu_name = '[COLOR=FF00B7EB]'+menu_name+'[/COLOR]'
         addLink(menu_name,url,name,imgurl,FANART) 
     else:
         try:
@@ -207,7 +204,7 @@ def BUILD_VIDEO_LINK(item):
             start_date = datetime.fromtimestamp(time.mktime(time.strptime(start_time, "%Y%m%d-%H%M")))
         
         start_date = datetime.strftime(utc_to_local(start_date),xbmc.getRegion('dateshort')+' '+xbmc.getRegion('time').replace('%H%H','%H').replace(':%S',''))       
-        addDir(menu_name + ' ' + start_date,'/disabled',999,imgurl,FANART,None,False)
+        addDir('[COLOR=FFFFB266]'+menu_name + '[/COLOR] ' + start_date,'/disabled',999,imgurl,FANART,None,False)
 
 
 def utc_to_local(utc_dt):
