@@ -79,7 +79,7 @@ def SCRAPE_VIDEOS(url,scrape_type=None):
     response = urllib2.urlopen(req)
     json_source = json.load(response)                           
     response.close()                
-	
+    
     if scrape_type == None:
         #LIVE
         #try:       
@@ -195,7 +195,8 @@ def BUILD_VIDEO_LINK(item):
     imgurl = "http://hdliveextra-pmd.edgesuite.net/HD/image_sports/mobile/"+item['image']+"_m50.jpg"    
    
     if url != '' and my_time >= event_start and my_time <= event_end:
-        url = url + "|User-Agent=Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36"
+        #url = url + "|User-Agent=Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36"
+        url = url + "|User-Agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.104 Safari/537.36"
         menu_name = '[COLOR=FF00B7EB]'+menu_name+'[/COLOR]'
         addLink(menu_name,url,name,imgurl,FANART) 
     else:
