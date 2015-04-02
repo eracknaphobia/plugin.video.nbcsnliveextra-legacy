@@ -79,7 +79,7 @@ def SCRAPE_VIDEOS(url,scrape_type=None):
     response = urllib2.urlopen(req)
     json_source = json.load(response)                           
     response.close()                
-	
+    
     if scrape_type == None:
         #LIVE
         #try:       
@@ -170,8 +170,7 @@ def BUILD_VIDEO_LINK(item):
     url = url.replace('manifest(format=m3u8-aapl-v3)','QualityLevels('+q_lvl+')/Manifest(video,format=m3u8-aapl-v3,audiotrack=audio_en_0)')       
     url = url.replace('manifest(format=m3u8-aapl,filtername=vodcut)','QualityLevels('+q_lvl+')/Manifest(video,format=m3u8-aapl,filtername=vodcut)')
     url = url.replace('manifest(format=m3u8-aapl-v3,filtername=vodcut)','QualityLevels('+q_lvl+')/Manifest(video,format=m3u8-aapl-v3,audiotrack=audio_en_0,filtername=vodcut)')                       
-    #url = url.replace('golfx/master.m3u8','golfx/'+q_lvl_golf+'/prog.m3u8')       
-    url = url + "|User-Agent=Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36"
+    #url = url.replace('golfx/master.m3u8','golfx/'+q_lvl_golf+'/prog.m3u8')           
     
     menu_name = item['title']
     name = menu_name                
@@ -196,6 +195,8 @@ def BUILD_VIDEO_LINK(item):
     imgurl = "http://hdliveextra-pmd.edgesuite.net/HD/image_sports/mobile/"+item['image']+"_m50.jpg"    
    
     if url != '' and my_time >= event_start and my_time <= event_end:
+        #url = url + "|User-Agent=Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36"
+        url = url + "|User-Agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.104 Safari/537.36"
         menu_name = '[COLOR=FF00B7EB]'+menu_name+'[/COLOR]'
         addLink(menu_name,url,name,imgurl,FANART) 
     else:
