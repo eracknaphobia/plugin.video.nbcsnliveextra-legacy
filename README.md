@@ -1,11 +1,7 @@
 plugin.video.nbcsnliveextra
 ======================
 
-KODI plugin NBC Sports Live Extra
+XBMC plugin NBC Sports Live Extra
 
-This plugin was built to watch** live and archive video of NBC Sports events 
+This plugin was built to watch live and archive video of NBC Sports events inside XBMC / KODI
 
-
-Thread: http://forum.kodi.tv/showthread.php?tid=207159
-
-** Some streams require a valid Cable / Satellite provider account to view

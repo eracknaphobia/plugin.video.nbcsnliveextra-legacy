@@ -1,3 +1,17 @@
+v2015.6.24
+- Resurrected
+- Ability to use TV provider login to access premium content
+- Color coding for visual cue of item status
+- Check for valid cookies and skip login if not expired
+
+v2015.6.11
+- Moved login code to class in providers folder. Each provider may need its own class / file
+- Color coded events (Orange = Requires Login & On later, Green = Free (both Live & On Later), Cyan = Requires Login & Live)
+- Can now select a video from list and login will be ran if necessary
+
+v2015.6.10
+- Able to login with TWC account
+
 v1.0.1
 - Fixed bug with CDN selection
 v1.0.0

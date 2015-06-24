@@ -7,44 +7,33 @@ import HTMLParser
 import calendar
 from datetime import datetime, timedelta
 import time
+import cookielib
+import base64
+#import string, random
+from resources.globals import *
+from resources.providers.twc import TWC
+from resources.providers.dish import DISH
+from resources.providers.adobe import ADOBE
+from resources.providers.comcast import COMCAST
+from resources.providers.direct_tv import DIRECT_TV
 
 
 
-addon_handle = int(sys.argv[1])
-ROOTDIR = xbmcaddon.Addon(id='plugin.video.nbcsnliveextra').getAddonInfo('path')
 
-#Settings file location
-settings = xbmcaddon.Addon(id='plugin.video.nbcsnliveextra')
-
-FANART = ROOTDIR+"/fanart.jpg"
-ICON = ROOTDIR+"/icon.png"
-ROOT_URL = 'http://stream.nbcsports.com/data/mobile/'
-
-#Main settings
-QUALITY = int(settings.getSetting(id="quality"))
-USER_AGENT = str(settings.getSetting(id="user-agent"))
-CDN = int(settings.getSetting(id="cdn"))
-
-
-def CATEGORIES():                
+def CATEGORIES():           
     addDir('Live & Upcoming','/live',1,ICON,FANART)
     addDir('Featured',ROOT_URL+'mcms/prod/nbc-featured.json',2,ICON,FANART)
-    #addDir('On NBC Sports','/replays',3,ICON,FANART)
+    addDir('On NBC Sports','/replays',3,ICON,FANART)
 
-def LIVE():      
+
+def LIVE_AND_UPCOMING():      
     #LIVE        
     SCRAPE_VIDEOS(ROOT_URL+'mcms/prod/nbc-live.json')
     #UPCOMING
     SCRAPE_VIDEOS(ROOT_URL+'mcms/prod/nbc-upcoming.json')
 
 
-def GET_ALL_SPORTS():
-    # This process has changed drastically
-    #Need This 
-    #http://link.theplatform.com/s/BxmELC/JYis41t0VJTO?mbr=true&manifest=m3u&feed=Mobile%20App%20-%20NBC%20Sports%20Live%20Extra
-    #To get This
-    #http://allisports-vh.akamaihd.net/i/HD/video_sports/NBCU_Sports_Group_-_AlliSports/118/775/DT_BK_Skate_Streetstyle_Recap_YT_1411364680363_,140,345,220,90,60,40,20,0k.mp4.csmil/index_1_av.m3u8?null=
-    #req = urllib2.Request(ROOT_URL+'configuration-2013.json')
+def GET_ALL_SPORTS():    
     req = urllib2.Request(ROOT_URL+'configuration-2014-RSN-Sections.json')    
     response = urllib2.urlopen(req)   
     json_source = json.load(response)                       
@@ -66,8 +55,16 @@ def FEATURED(url):
 
 
 def SCRAPE_VIDEOS(url,scrape_type=None):
+    print url
     req = urllib2.Request(url)
-    req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36')
+    #req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36')
+    req.add_header('Connection', 'keep-alive')
+    req.add_header('Accept', '*/*')
+    req.add_header('User-Agent', UA_NBCSN)
+    req.add_header('Accept-Language', 'en-us')
+    req.add_header('Accept-Encoding', 'gzip, deflate')
+    
+
     response = urllib2.urlopen(req)
     json_source = json.load(response)                           
     response.close()                
@@ -121,40 +118,14 @@ def BUILD_VIDEO_LINK(item):
     except:
         pass
     
-    #Set quality level based on user settings
-    if QUALITY == 0:
-        q_lvl = "200000"
-        q_lvl_golf = "296k"
-    elif QUALITY == 1:
-        q_lvl = "400000"
-        q_lvl_golf = "496k"
-    elif QUALITY == 2:
-        q_lvl = "600000"
-        q_lvl_golf = "796k"
-    elif QUALITY == 3:
-        q_lvl = "900000"
-        q_lvl_golf = "1296k"
-    elif QUALITY == 4:
-        q_lvl = "1400000"
-        q_lvl_golf = "1896k"
-    elif QUALITY == 5:
-        q_lvl = "2200000"
-        q_lvl_golf = "2596k"
-    else:
-        q_lvl = "3450000"
-        #q_lvl = "4296000"
-        q_lvl_golf = "4296k"
-    
-    
-    url = url.replace('master.m3u8',q_lvl_golf+'/prog.m3u8')       
-    url = url.replace('manifest(format=m3u8-aapl-v3)','QualityLevels('+q_lvl+')/Manifest(video,format=m3u8-aapl-v3,audiotrack=audio_en_0)')       
-    url = url.replace('manifest(format=m3u8-aapl,filtername=vodcut)','QualityLevels('+q_lvl+')/Manifest(video,format=m3u8-aapl,filtername=vodcut)')
-    url = url.replace('manifest(format=m3u8-aapl-v3,filtername=vodcut)','QualityLevels('+q_lvl+')/Manifest(video,format=m3u8-aapl-v3,audiotrack=audio_en_0,filtername=vodcut)')                       
+    #Set quality level based on user settings    
+    url = SET_STREAM_QUALITY(url)                      
     
     
     menu_name = item['title']
     name = menu_name                
     info = item['info']     
+    free = item['free']
     # Highlight active streams   
     start_time = item['start']
     current_time =  datetime.utcnow().strftime('%Y%m%d-%H%M')   
@@ -163,26 +134,105 @@ def BUILD_VIDEO_LINK(item):
     try:     
         length = int(item['length'])
     except:
+        length = 1440
         pass
 
     my_time = int(current_time[0:8]+current_time[9:])
     event_start = int(start_time[0:8]+start_time[9:]) 
-    event_end = int(current_time[0:8]+current_time[9:])+length
-    
+    #event_end = int(current_time[0:8]+current_time[9:])+length
+    event_end = event_start+length
+
+    #print name + str(length) + " " + str(my_time) + " " + str(event_start) + " " + str(event_end)
+        
+    #try:
     imgurl = "http://hdliveextra-pmd.edgesuite.net/HD/image_sports/mobile/"+item['image']+"_m50.jpg"    
-   
-    if url != '' and my_time >= event_start and my_time <= event_end:           
-        url = url + "|User-Agent=" + USER_AGENT
-        menu_name = '[COLOR=FF00B7EB]'+menu_name+'[/COLOR]'
-        addLink(menu_name,url,name,imgurl,FANART) 
-    else:
+    menu_name = filter(lambda x: x in string.printable, menu_name)
+    #url = url.encode('utf-8')
+    #print menu_name.encode('utf-8') + " " + url.encode('utf-8')
+    if url != '' and (mode != 1 or (my_time >= event_start and my_time <= event_end)):           
+        if free:
+            url = url + "|User-Agent=" + UA_NBCSN
+            menu_name = '[COLOR='+FREE+']'+menu_name + '[/COLOR]'
+            addLink(menu_name,url,name,imgurl,FANART) 
+        else:                
+            menu_name = '[COLOR='+LIVE+']'+menu_name + '[/COLOR]'
+            addDir(menu_name,url,5,imgurl,FANART) 
+    elif my_time < event_start:
         try:
             start_date = datetime.strptime(start_time, "%Y%m%d-%H%M")
         except TypeError:
             start_date = datetime.fromtimestamp(time.mktime(time.strptime(start_time, "%Y%m%d-%H%M")))
-        
+        if free:
+            menu_name = '[COLOR='+FREE+']'+menu_name + '[/COLOR]'
+        else:
+            menu_name = '[COLOR='+UPCOMING+']'+menu_name + '[/COLOR]'
+
         start_date = datetime.strftime(utc_to_local(start_date),xbmc.getRegion('dateshort')+' '+xbmc.getRegion('time').replace('%H%H','%H').replace(':%S',''))       
-        addDir('[COLOR=FFFFB266]'+menu_name + '[/COLOR] ' + start_date,'/disabled',999,imgurl,FANART,None,False)
+        addDir(menu_name + ' ' + start_date,'/disabled',999,imgurl,FANART,None,False)
+    #except:
+    #pass
+
+def SIGN_STREAM(stream_url, stream_name, stream_icon):   
+    print "MSO ID === "+  MSO_ID
+    
+    provider = None
+    if MSO_ID == 'Dish':
+        provider = DISH()
+    elif MSO_ID == 'TWC':
+        provider = TWC()
+    elif MSO_ID == 'Comcast_SSO':
+        provider = COMCAST()
+    elif MSO_ID == 'DTV':
+        provider = DIRECT_TV()
+    
+    #provider = SET_PROVIDER()
+
+    if provider != None:
+        #stream_url = AUTHORIZE_STREAM(provider)
+        
+        adobe = ADOBE()
+        expired_cookies = True
+        try:
+            cj = cookielib.LWPCookieJar()
+            cj.load(os.path.join(ADDON_PATH_PROFILE, 'cookies.lwp'),ignore_discard=True)
+            
+            for cookie in cj:
+                #print cookie.name
+                #print cookie.expires
+                #print cookie.is_expired()
+                if cookie.name == 'BIGipServerAdobe_Pass_Prod':
+                    expired_cookies = cookie.is_expired()
+        except:
+            pass
+
+        
+        resource_id = GET_RESOURCE_ID()    
+        signed_requestor_id = GET_SIGNED_REQUESTOR_ID() 
+
+        auth_token_file = os.path.join(ADDON_PATH_PROFILE, 'auth.token')        
+        
+        last_provider = ''
+        fname = os.path.join(ADDON_PATH_PROFILE, 'provider.info')
+        if os.path.isfile(fname):                
+            provider_file = open(fname,'r') 
+            last_provider = provider_file.readline()
+            provider_file.close()
+
+        #If cookies are expired or auth token is not present run login or provider has changed
+        if expired_cookies or not os.path.isfile(auth_token_file) or (last_provider != MSO_ID):
+            #saml_request, relay_state, saml_submit_url = adobe.GET_IDP()            
+            var_1, var_2, var_3 = provider.GET_IDP()            
+            saml_response, relay_state = provider.LOGIN(var_1, var_2, var_3)
+            adobe.POST_ASSERTION_CONSUMER_SERVICE(saml_response,relay_state)
+            adobe.POST_SESSION_DEVICE(signed_requestor_id)    
+
+
+        authz = adobe.POST_AUTHORIZE_DEVICE(resource_id,signed_requestor_id)        
+        media_token = adobe.POST_SHORT_AUTHORIZED(signed_requestor_id,authz)
+        stream_url = adobe.TV_SIGN(media_token,resource_id, stream_url)
+        
+
+        addLink(stream_name, stream_url, stream_name, stream_icon, FANART) 
 
 
 def utc_to_local(utc_dt):
@@ -208,7 +258,7 @@ def addLink(name,url,title,iconimage,fanart):
 def addDir(name,url,mode,iconimage,fanart=None,scrape_type=None,isFolder=True): 
     params = get_params()      
     ok=True
-    u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&scrape_type="+urllib.quote_plus(str(scrape_type))
+    u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&scrape_type="+urllib.quote_plus(str(scrape_type))+"&icon_image="+urllib.quote_plus(str(iconimage))
     liz=xbmcgui.ListItem(name, iconImage=ICON, thumbnailImage=iconimage)
     liz.setInfo( type="Video", infoLabels={ "Title": name } )
     liz.setProperty('fanart_image', fanart)
@@ -240,6 +290,7 @@ url=None
 name=None
 mode=None
 scrape_type=None
+icon_image = None
 
 try:
     url=urllib.unquote_plus(params["url"])
@@ -257,6 +308,11 @@ try:
     scrape_type=urllib.unquote_plus(params["scrape_type"])
 except:
     pass
+try:
+    icon_image=urllib.unquote_plus(params["icon_image"])
+except:
+    pass
+
 
 print "Mode: "+str(mode)
 print "URL: "+str(url)
@@ -264,16 +320,21 @@ print "Name: "+str(name)
 print "scrape_type:"+str(scrape_type)
 
 
-if mode==None or url==None or len(url)<1:
-        #print ""                
+if mode==None or url==None or len(url)<1:        
         CATEGORIES()        
 elif mode==1:        
-        LIVE()
+        LIVE_AND_UPCOMING()                     
 elif mode==2:        
         FEATURED(url)
 elif mode==3:        
         GET_ALL_SPORTS()
 elif mode==4:
         SCRAPE_VIDEOS(url,scrape_type)
+elif mode==5:
+        SIGN_STREAM(url, name, icon_image)
 
-xbmcplugin.endOfDirectory(addon_handle)
+#Don't cache live and upcoming list
+if mode==1:
+    xbmcplugin.endOfDirectory(int(sys.argv[1]), cacheToDisc=False)
+else:
+    xbmcplugin.endOfDirectory(ADDON_HANDLE)
