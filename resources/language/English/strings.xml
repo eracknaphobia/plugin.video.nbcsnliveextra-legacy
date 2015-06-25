@@ -3,6 +3,7 @@
 	<string id="110">Service Provider</string>
 	<string id="140">Username</string>
 	<string id="150">Password</string>
+	<string id="160">Clear Saved Data</string>
     <!-- Visual settings -->
     <string id="10">Stream Settings</string>   
     <string id="11">Stream Quality</string>	

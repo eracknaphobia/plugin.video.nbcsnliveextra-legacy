@@ -5,6 +5,7 @@
    <setting id="provider" type="enum" label="110" values="Comcast|Dish Network|Direct TV|Time Warner Cable" default="0" />   
    <setting id="username" type="text" label="140" default=""/>
    <setting id="password" type="text" label="150" option="hidden" default=""/>
+   <setting id="clear_data" type="bool" label="160" default="false"/>
   </category>
   <!-- Visual -->
   <category label="10">

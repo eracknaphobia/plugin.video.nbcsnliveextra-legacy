@@ -29,6 +29,7 @@ class DIRECT_TV():
                             ("User-Agent", UA_IPHONE)]
         
         resp = opener.open(IDP_URL)
+        print resp.info()
         idp_source = resp.read()
         resp.close()
         #print idp_source
@@ -74,41 +75,47 @@ class DIRECT_TV():
                                        'RelayState' : relay_state
                                        })
         
-        resp = opener.open(saml_submit_url, login_data)
-        idp_source = resp.read()
-        resp.close()
-        
-        last_url = resp.geturl()
-        next_url = FIND(idp_source,'action="','"')
+        try:
+            resp = opener.open(saml_submit_url, login_data)
+            print resp.info()
+            idp_source = resp.read()
+            resp.close()
+            
+            last_url = resp.geturl()
+            next_url = FIND(idp_source,'action="','"')
 
-        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))    
-        opener.addheaders = [ ("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"),
-                            ("Accept-Encoding", "gzip, deflate"),
-                            ("Accept-Language", "en-us"),
-                            ("Content-Type", "application/x-www-form-urlencoded"),                            
-                            ("Connection", "keep-alive"),
-                            ("Origin", "https://idp.dtvce.com"),
-                            ("Referer", last_url),
-                            ("User-Agent", UA_IPHONE)]
+            opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))    
+            opener.addheaders = [ ("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"),
+                                ("Accept-Encoding", "gzip, deflate"),
+                                ("Accept-Language", "en-us"),
+                                ("Content-Type", "application/x-www-form-urlencoded"),                            
+                                ("Connection", "keep-alive"),
+                                ("Origin", "https://idp.dtvce.com"),
+                                ("Referer", last_url),
+                                ("User-Agent", UA_IPHONE)]
 
-        
-        login_data = urllib.urlencode({'username' : USERNAME,
-                                       'password' : PASSWORD,
-                                       'register' : 'on'
-                                       })
-        
-        resp = opener.open(next_url, login_data)
-        idp_source = resp.read()
-        resp.close()
+            
+            login_data = urllib.urlencode({'username' : USERNAME,
+                                           'password' : PASSWORD,
+                                           'register' : 'on'
+                                           })
+            
+            resp = opener.open(next_url, login_data)
+            idp_source = resp.read()
+            resp.close()
 
-        saml_response = FIND(idp_source,'<input type="hidden" name="SAMLResponse" value="','"')
-        relay_state = FIND(idp_source,'<input type="hidden" name="RelayState" value="','"')
+            saml_response = FIND(idp_source,'<input type="hidden" name="SAMLResponse" value="','"')
+            relay_state = FIND(idp_source,'<input type="hidden" name="RelayState" value="','"')
 
-        
-        #Set Global header fields         
-        ORIGIN = 'https://idp.dtvce.com'
-        #REFERER = 'https://idp.dtvce.com/dtv-idp-authn/login?stateInfo=eJwFwdmiQkAAANAP8oCawkMPsszFYCxje4vGHkKFr7%2FnqJzcprUy8wDcCsa%2BetmjwFP7mf98NLuJYz85K3ftiCPVviHz9MTH6odVSyEnIWOFdyNh6k80CjuL3ZiOXxeeXOZrIYlfBnIizjOuzWFWIezjIPFzGMebq3fMXKSeTpqWBatFg%2FISyB19w4lc5LrAfHBdmmVXgHEPjkwQg4SCpkwFTFWY8XqFJ5xkp1cFSsbzmOw1F99Mezf2gkQ6XjtFZDvk0a8q9drxq821F0vSDhvD%2FKRie%2BdnhZw1W4ys%2BP4BTSxHyFIPHH%2Fo2UHj6hcT76YHiFz96Pp8X%2FBQSQLkseSJjqzMT4LCFJiJ%2FLAIeyyiOoxKG7RIy8c%2BxKHnGZsp3%2F4BemFx8A%3D%3D&providerName=IDP_NBCSports_C01'
-        REFERER = resp.geturl()
+            
+            #Set Global header fields         
+            ORIGIN = 'https://idp.dtvce.com'
+            #REFERER = 'https://idp.dtvce.com/dtv-idp-authn/login?stateInfo=eJwFwdmiQkAAANAP8oCawkMPsszFYCxje4vGHkKFr7%2FnqJzcprUy8wDcCsa%2BetmjwFP7mf98NLuJYz85K3ftiCPVviHz9MTH6odVSyEnIWOFdyNh6k80CjuL3ZiOXxeeXOZrIYlfBnIizjOuzWFWIezjIPFzGMebq3fMXKSeTpqWBatFg%2FISyB19w4lc5LrAfHBdmmVXgHEPjkwQg4SCpkwFTFWY8XqFJ5xkp1cFSsbzmOw1F99Mezf2gkQ6XjtFZDvk0a8q9drxq821F0vSDhvD%2FKRie%2BdnhZw1W4ys%2BP4BTSxHyFIPHH%2Fo2UHj6hcT76YHiFz96Pp8X%2FBQSQLkseSJjqzMT4LCFJiJ%2FLAIeyyiOoxKG7RIy8c%2BxKHnGZsp3%2F4BemFx8A%3D%3D&providerName=IDP_NBCSports_C01'
+            REFERER = resp.geturl()
+        except:
+            saml_response = ""
+            relay_state = ""
+            
         
         return saml_response, relay_state
         

@@ -112,20 +112,26 @@ class COMCAST():
                                        'passive':'false',
                                        'lang' : 'en'
                                        })
-        
-        resp = opener.open(url, login_data)
-        response = resp.read()
-        resp.close()
-        SAVE_COOKIE(cj)
-        
-        
-        saml_response = FIND(response,'<input type="hidden" name="SAMLResponse" value="','"')
-        relay_state = FIND(response,'<input type="hidden" name="RelayState" value="','"')
-        print "LOGIN RESPONSE--------------------------------------------------------------"
-        print response                
-        print "----------------------------------------------------------------------------"
-        ORIGIN = 'https://login.comcast.net'        
-        REFERER = resp.geturl()
+
+        try:
+            resp = opener.open(url, login_data)
+            print resp.getcode()
+            print resp.info()
+            response = resp.read()            
+            resp.close()
+            SAVE_COOKIE(cj)
+            
+            
+            saml_response = FIND(response,'<input type="hidden" name="SAMLResponse" value="','"')
+            relay_state = FIND(response,'<input type="hidden" name="RelayState" value="','"')
+            print "LOGIN RESPONSE--------------------------------------------------------------"
+            print response                
+            print "----------------------------------------------------------------------------"
+            ORIGIN = 'https://login.comcast.net'        
+            REFERER = resp.geturl()
+        except:
+            saml_response = ""
+            relay_state = ""
         
         return saml_response, relay_state
 

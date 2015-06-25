@@ -126,6 +126,7 @@ def BUILD_VIDEO_LINK(item):
     name = menu_name                
     info = item['info']     
     free = item['free']
+
     # Highlight active streams   
     start_time = item['start']
     pattern = "%Y%m%d-%H%M"
@@ -136,20 +137,28 @@ def BUILD_VIDEO_LINK(item):
     try:
         length = int(item['length'])
     except:
-        length = 1440
+        #Default to 24 hours if length not provided
+        length = 86400
         pass
-        
-    event_start = int(time.mktime(time.strptime(start_time, pattern)))    
+    
+
+    event_start = int(time.mktime(time.strptime(start_time, pattern)))
     event_end = int(event_start + length)
+
+    #Allow access to stream 10 minutes early
+    event_start = event_start - (10*60)
+
+    #Allow access to stream an hour after it's supposed to end
+    event_end = event_end + (60*60)
     
     
-    #print name + str(length) + " " + str(event_start) + " " + str(my_time) + " " + str(event_end)
+    print url
+    print name + str(length) + " " + str(event_start) + " " + str(my_time) + " " + str(event_end)
         
-    #try:
+    
     imgurl = "http://hdliveextra-pmd.edgesuite.net/HD/image_sports/mobile/"+item['image']+"_m50.jpg"    
     menu_name = filter(lambda x: x in string.printable, menu_name)
-    #url = url.encode('utf-8')
-    #print menu_name.encode('utf-8') + " " + url.encode('utf-8')
+    
     if url != '' and (mode != 1 or (my_time >= event_start and my_time <= event_end) or 'Watch Golf Channel LIVE' in name):           
         if free:
             url = url + "|User-Agent=" + UA_NBCSN
@@ -157,7 +166,7 @@ def BUILD_VIDEO_LINK(item):
             addLink(menu_name,url,name,imgurl,FANART) 
         else:                
             menu_name = '[COLOR='+LIVE+']'+menu_name + '[/COLOR]'
-            addDir(menu_name,url,5,imgurl,FANART)         
+            addDir(menu_name,url,5,imgurl,FANART)             
     elif my_time < event_end:
         try:
             start_date = datetime.strptime(start_time, "%Y%m%d-%H%M")
@@ -171,12 +180,10 @@ def BUILD_VIDEO_LINK(item):
         start_date = datetime.strftime(utc_to_local(start_date),xbmc.getRegion('dateshort')+' '+xbmc.getRegion('time').replace('%H%H','%H').replace(':%S',''))       
         addDir(menu_name + ' ' + start_date,'/disabled',999,imgurl,FANART,None,False)
     
-    #except:
-    #pass
 
-def SIGN_STREAM(stream_url, stream_name, stream_icon):   
-    print "MSO ID === "+  MSO_ID
     
+def SIGN_STREAM(stream_url, stream_name, stream_icon):   
+    print "MSO ID === "+  MSO_ID    
     provider = None
     if MSO_ID == 'Dish':
         provider = DISH()
@@ -198,21 +205,16 @@ def SIGN_STREAM(stream_url, stream_name, stream_icon):
             cj = cookielib.LWPCookieJar()
             cj.load(os.path.join(ADDON_PATH_PROFILE, 'cookies.lwp'),ignore_discard=True)
             
-            for cookie in cj:
-                #print cookie.name
-                #print cookie.expires
-                #print cookie.is_expired()
+            for cookie in cj:                
                 if cookie.name == 'BIGipServerAdobe_Pass_Prod':
+                    #print cookie.name
+                    #print cookie.expires
+                    #print cookie.is_expired()
                     expired_cookies = cookie.is_expired()
         except:
             pass
 
-        
-        resource_id = GET_RESOURCE_ID()    
-        signed_requestor_id = GET_SIGNED_REQUESTOR_ID() 
-
-        auth_token_file = os.path.join(ADDON_PATH_PROFILE, 'auth.token')        
-        
+        auth_token_file = os.path.join(ADDON_PATH_PROFILE, 'auth.token')  
         last_provider = ''
         fname = os.path.join(ADDON_PATH_PROFILE, 'provider.info')
         if os.path.isfile(fname):                
@@ -220,21 +222,51 @@ def SIGN_STREAM(stream_url, stream_name, stream_icon):
             last_provider = provider_file.readline()
             provider_file.close()
 
+        print "Did cookies expire? " + str(expired_cookies)
+        print "Does the auth token file exist? " + str(os.path.isfile(auth_token_file))
+        print "Does the last provider matcht the current provider? " + str(last_provider != MSO_ID)
+        print "Who was the last provider? " +str(last_provider)
+                
+        resource_id = GET_RESOURCE_ID()    
+        signed_requestor_id = GET_SIGNED_REQUESTOR_ID() 
+
+
         #If cookies are expired or auth token is not present run login or provider has changed
         if expired_cookies or not os.path.isfile(auth_token_file) or (last_provider != MSO_ID):
             #saml_request, relay_state, saml_submit_url = adobe.GET_IDP()            
             var_1, var_2, var_3 = provider.GET_IDP()            
             saml_response, relay_state = provider.LOGIN(var_1, var_2, var_3)
+            #Error logging in. Abort! Abort!
+            print saml_response
+            print relay_state
+
+            if saml_response == '' and relay_state == '':
+                msg = "Please verify that your username and password is correct"
+                dialog = xbmcgui.Dialog() 
+                ok = dialog.ok('Login Failed', msg)
+                return
+            elif saml_response == 'captcha':
+                msg = "Login requires captcha. Please try again later"
+                dialog = xbmcgui.Dialog() 
+                ok = dialog.ok('Captcha Found', msg)
+                return
+
             adobe.POST_ASSERTION_CONSUMER_SERVICE(saml_response,relay_state)
             adobe.POST_SESSION_DEVICE(signed_requestor_id)    
 
 
         authz = adobe.POST_AUTHORIZE_DEVICE(resource_id,signed_requestor_id)        
-        media_token = adobe.POST_SHORT_AUTHORIZED(signed_requestor_id,authz)
-        stream_url = adobe.TV_SIGN(media_token,resource_id, stream_url)
-        
 
-        addLink(stream_name, stream_url, stream_name, stream_icon, FANART) 
+        if 'Authorization failed' in authz:
+            msg = "Failed to authorize"
+            dialog = xbmcgui.Dialog() 
+            ok = dialog.ok('Authorization Failed', msg)
+        else:
+            media_token = adobe.POST_SHORT_AUTHORIZED(signed_requestor_id,authz)
+            stream_url = adobe.TV_SIGN(media_token,resource_id, stream_url)
+            
+
+            addLink(stream_name, stream_url, stream_name, stream_icon, FANART) 
 
 
 def utc_to_local(utc_dt):
@@ -333,7 +365,13 @@ elif mode==3:
 elif mode==4:
         SCRAPE_VIDEOS(url,scrape_type)
 elif mode==5:
-        SIGN_STREAM(url, name, icon_image)
+        if USERNAME != '' and PASSWORD != '':
+            SIGN_STREAM(url, name, icon_image)
+        else:
+            msg = "A valid username and password is required to view premium content"
+            dialog = xbmcgui.Dialog() 
+            ok = dialog.ok('Credentials Missing', msg)
+            #sys.exit("Credentials not provided")
 
 #Don't cache live and upcoming list
 if mode==1:

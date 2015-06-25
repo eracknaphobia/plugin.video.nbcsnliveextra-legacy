@@ -186,15 +186,14 @@ class DISH():
 
         final_response = final_response.replace('\n',"")         
         discovery_url = FIND(final_response,'location.href = "','"')
-        #Set-Cookie: dishnetworkIdPAuthToken=_c21b23175bc892b059442bc83c8673d136fa0a49a7; expires=Sun, 20-Sep-2015 01:09:12 GMT; path=/; secure; httponly
-        #     https://identity1.dishnetwork.com/saml/module.php/authSynacor/DiscoveryAssociationsResume.php?AuthState=_3f1b976cc3bd753a301f6833441498686bfbae2252:https://identity1.dishnetwork.com/saml/saml2/idp/SSOService.php?spentityid=https://saml.sp.auth.adobe.com&cookieTime=1434935346&RelayState=_dbef1c01-9685-48cc-b14b-ec04ecf94f7f&RequesterID=["nbcsports"]&NameIDFormat=urn:oasis:names:tc:SAML:2.0:nameid-format:transient
-        #;url=https://identity1.dishnetwork.com/saml/module.php/authSynacor/DiscoveryAssociationsResume.php?AuthState=_3a83533c78dd5f209c527de83dc3bf84d8566b012d%3Ahttps%3A%2F%2Fidentity1.dishnetwork.com%2Fsaml%2Fsaml2%2Fidp%2FSSOService.php%3Fspentityid%3Dhttps%253A%252F%252Fsaml.sp.auth.adobe.com%26cookieTime%3D1434822289%26RelayState%3D_0c70f098-ba6a-452a-bbf1-c41a3684bbb1%26RequesterID%3D%255B%2522nbcsports%2522%255D%26NameIDFormat%3Durn%253Aoasis%253Anames%253Atc%253ASAML%253A2.0%253Anameid-format%253Atransient" />
-        #discovery_url = FIND(final_response,'url=','"')
         
-        
-
         saml_response = ''
         relay_state = ''
+
+        if 'captcha' in final_response:
+            saml_response = 'captcha'
+
+        
 
         if discovery_url != '':
             opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))    
@@ -229,6 +228,7 @@ class DISH():
                                 #("Cookie", cookies + " s_cc=true; s_sq=synacortveauth%3D%2526pid%253DFederated%252520Login%2526pidt%253D1%2526oid%253Dauthsynacor_identity1.dishnetwork.com%2526oidt%253D3%2526ot%253DSUBMIT"),
                                 ("User-Agent", UA_IPHONE)]
            
+            
             resp = opener.open(last_url+"&history=3")
             if resp.info().get('Content-Encoding') == 'gzip':
                 buf = StringIO(resp.read())
@@ -251,9 +251,6 @@ class DISH():
             #cj.save(os.path.join(ADDON_PATH_PROFILE, 'cookies.lwp'),ignore_discard=True);
             SAVE_COOKIE(cj)
 
-        print saml_response
-        print relay_state
-                
         
         return saml_response, relay_state
 

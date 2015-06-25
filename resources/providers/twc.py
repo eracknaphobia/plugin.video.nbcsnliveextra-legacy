@@ -77,15 +77,21 @@ class TWC():
                                        'Profile' : 'mobile'
                                        })
         
-        resp = opener.open(url, login_data)
-        idp_source = resp.read()
-        resp.close()
-        
-        saml_response = FIND(idp_source,'<input type="hidden" name="SAMLResponse" value="','"')
-        relay_state = FIND(idp_source,'<input type="hidden" name="RelayState" value="','"')
+        try:
+            resp = opener.open(url, login_data)
+            print resp.getcode()
+            print resp.info()
+            idp_source = resp.read()
+            resp.close()
+            
+            saml_response = FIND(idp_source,'<input type="hidden" name="SAMLResponse" value="','"')
+            relay_state = FIND(idp_source,'<input type="hidden" name="RelayState" value="','"')
 
-        #Set Global header fields         
-        ORIGIN = 'https://ids.rr.com'
-        REFERER = 'https://ids.rr.com/nidp/saml2/sso?sid=0'
+            #Set Global header fields         
+            ORIGIN = 'https://ids.rr.com'
+            REFERER = 'https://ids.rr.com/nidp/saml2/sso?sid=0'
+        except:
+            saml_response = ""
+            relay_state = ""
         
         return saml_response, relay_state

@@ -21,79 +21,6 @@ import gzip
 
 
 
-# KODI ADDON GLOBALS
-ADDON_HANDLE = int(sys.argv[1])
-ROOTDIR = xbmcaddon.Addon(id='plugin.video.nbcsnliveextra').getAddonInfo('path')
-ADDON = xbmcaddon.Addon()
-ADDON_ID = ADDON.getAddonInfo('id')
-ADDON_VERSION = ADDON.getAddonInfo('version')
-ADDON_PATH = xbmc.translatePath(ADDON.getAddonInfo('path'))
-ADDON_PATH_PROFILE = xbmc.translatePath(ADDON.getAddonInfo('profile'))
-KODI_VERSION = float(re.findall(r'\d{2}\.\d{1}', xbmc.getInfoLabel("System.BuildVersion"))[0])
-LOCAL_STRING = ADDON.getLocalizedString
-FANART = ROOTDIR+"/fanart.jpg"
-ICON = ROOTDIR+"/icon.png"
-ROOT_URL = 'http://stream.nbcsports.com/data/mobile/'
-
-#Settings file location
-settings = xbmcaddon.Addon(id='plugin.video.nbcsnliveextra')
-
-#Main settings
-QUALITY = int(settings.getSetting(id="quality"))
-#USER_AGENT = str(settings.getSetting(id="user-agent"))
-CDN = int(settings.getSetting(id="cdn"))
-USERNAME = str(settings.getSetting(id="username"))
-PASSWORD = str(settings.getSetting(id="password"))
-PROVIDER = str(settings.getSetting(id="provider"))
-
-MSO_ID = ''
-if PROVIDER == '0':
-    MSO_ID = 'Comcast_SSO'	
-elif PROVIDER == '1':
-    MSO_ID = 'Dish'	
-elif PROVIDER == '2':
-    MSO_ID = 'DTV'
-elif PROVIDER == '3':
-    MSO_ID = 'TWC'
-
-IDP_URL = 'https://sp.auth.adobe.com//adobe-services/1.0/authenticate/saml?domain_name=adobe.com&noflash=true&mso_id='+MSO_ID+'&requestor_id=nbcsports&no_iframe=true&client_type=iOS&client_version=1.9&redirect_url=http://adobepass.ios.app/'
-ORIGIN = ''
-REFERER = ''
-
-
-#User Agents
-UA_IPHONE = 'Mozilla/5.0 (iPhone; CPU iPhone OS 8_3 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko)'
-UA_PC = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.81 Safari/537.36'
-UA_ADOBE_PASS = 'AdobePassNativeClient/1.9 (iPhone; U; CPU iPhone OS 8.3 like Mac OS X; en-us)'
-UA_NBCSN = 'NBCSports/1030 CFNetwork/711.3.18 Darwin/14.0.0'
-
-
-#Create Random Device ID and save it to a file
-fname = os.path.join(ADDON_PATH_PROFILE, 'device.id')
-if not os.path.isfile(fname):
-	new_device_id = ''.join([random.choice('0123456789abcdef') for x in range(64)])
-	device_file = open(fname,'w') 	
-	device_file.write(new_device_id)
-	device_file.close()
-
-fname = os.path.join(ADDON_PATH_PROFILE, 'device.id')
-device_file = open(fname,'r') 
-DEVICE_ID = device_file.readline()
-device_file.close()
-
-#Create a file for storing Provider info
-fname = os.path.join(ADDON_PATH_PROFILE, 'provider.info')
-if not os.path.isfile(fname):    
-    provider_file = open(fname,'w')   
-    provider_file.write(MSO_ID)
-    provider_file.close()
-
-
-#Event Colors
-FREE = 'FF43CD80'
-LIVE = 'FF00B7EB'
-UPCOMING = 'FFFFB266'
-
 
 
 
@@ -101,7 +28,10 @@ def FIND(source,start_str,end_str):
     start = source.find(start_str)
     end = source.find(end_str,start+len(start_str))
 
-    return source[start+len(start_str):end]
+    if start != -1:        
+        return source[start+len(start_str):end]
+    else:
+        return ''
 
 def GET_RESOURCE_ID():
     #########################
@@ -198,7 +128,29 @@ def SAVE_COOKIE(cj):
             cookie.expires =  2114380800
     
     cj.save(ignore_discard=True);  
-    
+
+
+def CLEAR_SAVED_DATA():
+    print "IN CLEAR"
+    try:
+        os.remove(ADDON_PATH_PROFILE+'/device.id')
+    except:
+        pass
+    try:
+        os.remove(ADDON_PATH_PROFILE+'/provider.info')
+    except:
+        pass
+    try:
+        os.remove(ADDON_PATH_PROFILE+'/cookies.lwp')
+    except:
+        pass
+    try:
+        os.remove(ADDON_PATH_PROFILE+'/auth.token')
+    except:
+        pass
+    ADDON.setSetting(id='clear_data', value='false')   
+
+
 """
 def SET_PROVIDER():
     provider = None
@@ -253,3 +205,90 @@ def AUTHORIZE_STREAM(provider):
 
     return stream_url
     """
+
+
+
+
+# KODI ADDON GLOBALS
+ADDON_HANDLE = int(sys.argv[1])
+ROOTDIR = xbmcaddon.Addon(id='plugin.video.nbcsnliveextra').getAddonInfo('path')
+ADDON = xbmcaddon.Addon()
+ADDON_ID = ADDON.getAddonInfo('id')
+ADDON_VERSION = ADDON.getAddonInfo('version')
+ADDON_PATH = xbmc.translatePath(ADDON.getAddonInfo('path'))
+ADDON_PATH_PROFILE = xbmc.translatePath(ADDON.getAddonInfo('profile'))
+KODI_VERSION = float(re.findall(r'\d{2}\.\d{1}', xbmc.getInfoLabel("System.BuildVersion"))[0])
+LOCAL_STRING = ADDON.getLocalizedString
+FANART = ROOTDIR+"/fanart.jpg"
+ICON = ROOTDIR+"/icon.png"
+ROOT_URL = 'http://stream.nbcsports.com/data/mobile/'
+
+#Settings file location
+settings = xbmcaddon.Addon(id='plugin.video.nbcsnliveextra')
+
+#Main settings
+QUALITY = int(settings.getSetting(id="quality"))
+#USER_AGENT = str(settings.getSetting(id="user-agent"))
+CDN = int(settings.getSetting(id="cdn"))
+USERNAME = str(settings.getSetting(id="username"))
+PASSWORD = str(settings.getSetting(id="password"))
+PROVIDER = str(settings.getSetting(id="provider"))
+CLEAR = str(settings.getSetting(id="clear_data"))
+
+if CLEAR == 'true':
+   CLEAR_SAVED_DATA()
+
+
+MSO_ID = ''
+if PROVIDER == '0':
+    MSO_ID = 'Comcast_SSO'  
+elif PROVIDER == '1':
+    MSO_ID = 'Dish' 
+elif PROVIDER == '2':
+    MSO_ID = 'DTV'
+elif PROVIDER == '3':
+    MSO_ID = 'TWC'
+
+IDP_URL = 'https://sp.auth.adobe.com//adobe-services/1.0/authenticate/saml?domain_name=adobe.com&noflash=true&mso_id='+MSO_ID+'&requestor_id=nbcsports&no_iframe=true&client_type=iOS&client_version=1.9&redirect_url=http://adobepass.ios.app/'
+ORIGIN = ''
+REFERER = ''
+
+
+#User Agents
+UA_IPHONE = 'Mozilla/5.0 (iPhone; CPU iPhone OS 8_3 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko)'
+UA_PC = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.81 Safari/537.36'
+UA_ADOBE_PASS = 'AdobePassNativeClient/1.9 (iPhone; U; CPU iPhone OS 8.3 like Mac OS X; en-us)'
+UA_NBCSN = 'NBCSports/1030 CFNetwork/711.3.18 Darwin/14.0.0'
+
+
+#Create Random Device ID and save it to a file
+fname = os.path.join(ADDON_PATH_PROFILE, 'device.id')
+if not os.path.isfile(fname):
+    new_device_id = ''.join([random.choice('0123456789abcdef') for x in range(64)])
+    device_file = open(fname,'w')   
+    device_file.write(new_device_id)
+    device_file.close()
+
+fname = os.path.join(ADDON_PATH_PROFILE, 'device.id')
+device_file = open(fname,'r') 
+DEVICE_ID = device_file.readline()
+device_file.close()
+
+#Create a file for storing Provider info
+fname = os.path.join(ADDON_PATH_PROFILE, 'provider.info')
+if os.path.isfile(fname):    
+    provider_file = open(fname,'r')
+    last_provider = provider_file.readline()
+    provider_file.close()
+    if MSO_ID != last_provider:
+        CLEAR_SAVED_DATA()
+
+provider_file = open(fname,'w')   
+provider_file.write(MSO_ID)
+provider_file.close()
+
+
+#Event Colors
+FREE = 'FF43CD80'
+LIVE = 'FF00B7EB'
+UPCOMING = 'FFFFB266'
