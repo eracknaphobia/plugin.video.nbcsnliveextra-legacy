@@ -273,17 +273,17 @@ class ADOBE():
         ################################
         # Get Cookie from manifest file
         ################################
-        stream_cookie = ''
-        try:
-            req = urllib2.Request(url)  
-            req.add_header('User-Agent',  'AppleCoreMedia/1.0.0.12F70 (iPhone; U; CPU OS 8_3 like Mac OS X; en_us)')
-            response = urllib2.urlopen(req)        
-            stream_cookie = response.info()['Set-Cookie']
-            response.close() 
-        except:
-            pass
+        #stream_cookie = ''
+        #try:
+        #req = urllib2.Request(url)  
+        #req.add_header('User-Agent',  'AppleCoreMedia/1.0.0.12F70 (iPhone; U; CPU OS 8_3 like Mac OS X; en_us)')
+        #response = urllib2.urlopen(req)        
+        #stream_cookie = response.info()['Set-Cookie']
+        #response.close() 
+        #except:
+        #pass
 
-        print stream_cookie
+        #print stream_cookie
 
         #Set quality level based on user settings
         url = SET_STREAM_QUALITY(url)            
