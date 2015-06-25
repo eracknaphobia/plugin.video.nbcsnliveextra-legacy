@@ -289,8 +289,8 @@ class ADOBE():
         url = SET_STREAM_QUALITY(url)            
 
         url = url+"|User-Agent="+UA_NBCSN
-        if stream_cookie != '':
-            url = url + "&Cookie="+stream_cookie
+        #if stream_cookie != '':
+        #url = url + "&Cookie="+stream_cookie
 
         print url
         #addLink(stream_name,url,stream_name,stream_icon,FANART) 
