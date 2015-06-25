@@ -5,6 +5,7 @@ v2015.6.25
 - Fixed bug that caused provider info file to not be updated
 - Added ability to clear saved data in settings (cookies, device id, auth token provider info)
 - Clear saved data if provider changes
+- Removed Code that was causing live stream drops
 
 v2015.6.24
 - Resurrected
