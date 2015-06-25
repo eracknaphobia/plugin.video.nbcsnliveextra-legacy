@@ -128,36 +128,37 @@ def BUILD_VIDEO_LINK(item):
     free = item['free']
     # Highlight active streams   
     start_time = item['start']
-    current_time =  datetime.utcnow().strftime('%Y%m%d-%H%M')   
+    pattern = "%Y%m%d-%H%M"
+    current_time =  datetime.utcnow().strftime(pattern) 
+    my_time = int(time.mktime(time.strptime(current_time, pattern)))     
 
     length = 0
-    try:     
+    try:
         length = int(item['length'])
     except:
         length = 1440
         pass
-
-    my_time = int(current_time[0:8]+current_time[9:])
-    event_start = int(start_time[0:8]+start_time[9:]) 
-    #event_end = int(current_time[0:8]+current_time[9:])+length
-    event_end = event_start+length
-
-    #print name + str(length) + " " + str(my_time) + " " + str(event_start) + " " + str(event_end)
+        
+    event_start = int(time.mktime(time.strptime(start_time, pattern)))    
+    event_end = int(event_start + length)
+    
+    
+    #print name + str(length) + " " + str(event_start) + " " + str(my_time) + " " + str(event_end)
         
     #try:
     imgurl = "http://hdliveextra-pmd.edgesuite.net/HD/image_sports/mobile/"+item['image']+"_m50.jpg"    
     menu_name = filter(lambda x: x in string.printable, menu_name)
     #url = url.encode('utf-8')
     #print menu_name.encode('utf-8') + " " + url.encode('utf-8')
-    if url != '' and (mode != 1 or (my_time >= event_start and my_time <= event_end)):           
+    if url != '' and (mode != 1 or (my_time >= event_start and my_time <= event_end) or 'Watch Golf Channel LIVE' in name):           
         if free:
             url = url + "|User-Agent=" + UA_NBCSN
             menu_name = '[COLOR='+FREE+']'+menu_name + '[/COLOR]'
             addLink(menu_name,url,name,imgurl,FANART) 
         else:                
             menu_name = '[COLOR='+LIVE+']'+menu_name + '[/COLOR]'
-            addDir(menu_name,url,5,imgurl,FANART) 
-    elif my_time < event_start:
+            addDir(menu_name,url,5,imgurl,FANART)         
+    elif my_time < event_end:
         try:
             start_date = datetime.strptime(start_time, "%Y%m%d-%H%M")
         except TypeError:
@@ -169,6 +170,7 @@ def BUILD_VIDEO_LINK(item):
 
         start_date = datetime.strftime(utc_to_local(start_date),xbmc.getRegion('dateshort')+' '+xbmc.getRegion('time').replace('%H%H','%H').replace(':%S',''))       
         addDir(menu_name + ' ' + start_date,'/disabled',999,imgurl,FANART,None,False)
+    
     #except:
     #pass
 
