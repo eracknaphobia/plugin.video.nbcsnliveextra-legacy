@@ -141,6 +141,9 @@ class ADOBE():
         auth_token = device_file.readline()
         device_file.close()
         
+        if auth_token == '':
+            return ''
+
         url = 'https://sp.auth.adobe.com//adobe-services/1.0/authorizeDevice'
         http = httplib2.Http()
         http.disable_ssl_certificate_validation=True    

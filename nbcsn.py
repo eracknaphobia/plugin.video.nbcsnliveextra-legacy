@@ -164,7 +164,7 @@ def BUILD_VIDEO_LINK(item):
             url = url + "|User-Agent=" + UA_NBCSN
             menu_name = '[COLOR='+FREE+']'+menu_name + '[/COLOR]'
             addLink(menu_name,url,name,imgurl,FANART) 
-        else:                
+        elif FREE_ONLY == 'false':                
             menu_name = '[COLOR='+LIVE+']'+menu_name + '[/COLOR]'
             addDir(menu_name,url,5,imgurl,FANART)             
     elif my_time < event_end:
@@ -172,13 +172,18 @@ def BUILD_VIDEO_LINK(item):
             start_date = datetime.strptime(start_time, "%Y%m%d-%H%M")
         except TypeError:
             start_date = datetime.fromtimestamp(time.mktime(time.strptime(start_time, "%Y%m%d-%H%M")))
+
         if free:
             menu_name = '[COLOR='+FREE+']'+menu_name + '[/COLOR]'
-        else:
+            start_date = datetime.strftime(utc_to_local(start_date),xbmc.getRegion('dateshort')+' '+xbmc.getRegion('time').replace('%H%H','%H').replace(':%S',''))       
+            addDir(menu_name + ' ' + start_date,'/disabled',999,imgurl,FANART,None,False)
+            
+        elif FREE_ONLY == 'false':
             menu_name = '[COLOR='+UPCOMING+']'+menu_name + '[/COLOR]'
+            start_date = datetime.strftime(utc_to_local(start_date),xbmc.getRegion('dateshort')+' '+xbmc.getRegion('time').replace('%H%H','%H').replace(':%S',''))       
+            addDir(menu_name + ' ' + start_date,'/disabled',999,imgurl,FANART,None,False)
 
-        start_date = datetime.strftime(utc_to_local(start_date),xbmc.getRegion('dateshort')+' '+xbmc.getRegion('time').replace('%H%H','%H').replace(':%S',''))       
-        addDir(menu_name + ' ' + start_date,'/disabled',999,imgurl,FANART,None,False)
+        
     
 
     
@@ -207,9 +212,9 @@ def SIGN_STREAM(stream_url, stream_name, stream_icon):
             
             for cookie in cj:                
                 if cookie.name == 'BIGipServerAdobe_Pass_Prod':
-                    #print cookie.name
-                    #print cookie.expires
-                    #print cookie.is_expired()
+                    print cookie.name
+                    print cookie.expires
+                    print cookie.is_expired()
                     expired_cookies = cookie.is_expired()
         except:
             pass
@@ -224,7 +229,7 @@ def SIGN_STREAM(stream_url, stream_name, stream_icon):
 
         print "Did cookies expire? " + str(expired_cookies)
         print "Does the auth token file exist? " + str(os.path.isfile(auth_token_file))
-        print "Does the last provider matcht the current provider? " + str(last_provider != MSO_ID)
+        print "Does the last provider match the current provider? " + str(last_provider == MSO_ID)
         print "Who was the last provider? " +str(last_provider)
                 
         resource_id = GET_RESOURCE_ID()    
@@ -257,7 +262,7 @@ def SIGN_STREAM(stream_url, stream_name, stream_icon):
 
         authz = adobe.POST_AUTHORIZE_DEVICE(resource_id,signed_requestor_id)        
 
-        if 'Authorization failed' in authz:
+        if 'Authorization failed' in authz or authz == '':
             msg = "Failed to authorize"
             dialog = xbmcgui.Dialog() 
             ok = dialog.ok('Authorization Failed', msg)

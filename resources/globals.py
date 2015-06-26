@@ -234,6 +234,7 @@ USERNAME = str(settings.getSetting(id="username"))
 PASSWORD = str(settings.getSetting(id="password"))
 PROVIDER = str(settings.getSetting(id="provider"))
 CLEAR = str(settings.getSetting(id="clear_data"))
+FREE_ONLY = str(settings.getSetting(id="free_only"))
 
 if CLEAR == 'true':
    CLEAR_SAVED_DATA()
