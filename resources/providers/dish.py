@@ -179,6 +179,8 @@ class DISH():
             buf = StringIO(resp.read())
             f = gzip.GzipFile(fileobj=buf)
             final_response = f.read()
+        else:
+            final_response = resp.read()
         
         resp.close()
         print "FINAL RESPONSE"

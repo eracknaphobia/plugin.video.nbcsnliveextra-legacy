@@ -78,7 +78,11 @@ class DIRECT_TV():
         try:
             resp = opener.open(saml_submit_url, login_data)
             print resp.info()
-            idp_source = resp.read()
+            #idp_source = resp.read()
+            if resp.info().get('Content-Encoding') == 'gzip':
+                buf = StringIO(resp.read())
+                f = gzip.GzipFile(fileobj=buf)
+                idp_source = f.read()           
             resp.close()
             
             last_url = resp.geturl()

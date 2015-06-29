@@ -81,7 +81,14 @@ class TWC():
             resp = opener.open(url, login_data)
             print resp.getcode()
             print resp.info()
-            idp_source = resp.read()
+            #idp_source = resp.read()
+            if resp.info().get('Content-Encoding') == 'gzip':
+                buf = StringIO(resp.read())
+                f = gzip.GzipFile(fileobj=buf)
+                idp_source = f.read()
+            else:
+                idp_source = resp.read()
+                
             resp.close()
             
             saml_response = FIND(idp_source,'<input type="hidden" name="SAMLResponse" value="','"')

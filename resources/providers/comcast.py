@@ -116,8 +116,13 @@ class COMCAST():
         try:
             resp = opener.open(url, login_data)
             print resp.getcode()
-            print resp.info()
-            response = resp.read()            
+            print resp.info()        
+            if resp.info().get('Content-Encoding') == 'gzip':
+                buf = StringIO(resp.read())
+                f = gzip.GzipFile(fileobj=buf)
+                response = f.read()           
+            else:
+                response = resp.read() 
             resp.close()
             SAVE_COOKIE(cj)
             
