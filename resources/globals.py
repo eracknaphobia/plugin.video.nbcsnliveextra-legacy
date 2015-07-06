@@ -265,6 +265,8 @@ UA_NBCSN = 'NBCSports/1030 CFNetwork/711.3.18 Darwin/14.0.0'
 #Create Random Device ID and save it to a file
 fname = os.path.join(ADDON_PATH_PROFILE, 'device.id')
 if not os.path.isfile(fname):
+    if not os.path.exists(ADDON_PATH_PROFILE):
+        os.makedirs(ADDON_PATH_PROFILE)
     new_device_id = ''.join([random.choice('0123456789abcdef') for x in range(64)])
     device_file = open(fname,'w')   
     device_file.write(new_device_id)

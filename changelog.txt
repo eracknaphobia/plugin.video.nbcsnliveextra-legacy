@@ -1,3 +1,7 @@
+v2015.7.6
+- Fixed error caused when no profile folder exists.
+- Fixed bug with Direct TV login
+
 v2015.6.29
 - Added ability to uncompress gzip responses
 

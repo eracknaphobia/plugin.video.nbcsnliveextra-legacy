@@ -83,6 +83,9 @@ class DIRECT_TV():
                 buf = StringIO(resp.read())
                 f = gzip.GzipFile(fileobj=buf)
                 idp_source = f.read()           
+            else:
+                idp_source = resp.read()
+                
             resp.close()
             
             last_url = resp.geturl()
