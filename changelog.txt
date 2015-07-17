@@ -1,3 +1,7 @@
+v2015.7.17
+- List items now display media info (description, air date, etc.)
+- Added color coding for free upcoming events
+
 v2015.7.6
 - Fixed error caused when no profile folder exists.
 - Fixed bug with Direct TV login

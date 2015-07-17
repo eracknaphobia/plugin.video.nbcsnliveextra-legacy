@@ -28,13 +28,13 @@ def CATEGORIES():
 
 def LIVE_AND_UPCOMING():      
     #LIVE        
-    SCRAPE_VIDEOS(ROOT_URL+'mcms/prod/nbc-live.json')
+    SCRAPE_VIDEOS(ROOT_URL+'mcms/prod/nbc-live-ios.json')
     #UPCOMING
-    SCRAPE_VIDEOS(ROOT_URL+'mcms/prod/nbc-upcoming.json')
+    SCRAPE_VIDEOS(ROOT_URL+'mcms/prod/nbc-upcoming-ios.json')
 
 
 def GET_ALL_SPORTS():    
-    req = urllib2.Request(ROOT_URL+'configuration-2014-RSN-Sections.json')    
+    req = urllib2.Request(ROOT_URL+'configuration-liveextra-ios.json')    
     response = urllib2.urlopen(req)   
     json_source = json.load(response)                       
     response.close()    
@@ -124,7 +124,7 @@ def BUILD_VIDEO_LINK(item):
     
     menu_name = item['title']
     name = menu_name                
-    info = item['info']     
+    desc = item['info']     
     free = item['free']
 
     # Highlight active streams   
@@ -133,17 +133,24 @@ def BUILD_VIDEO_LINK(item):
     current_time =  datetime.utcnow().strftime(pattern) 
     my_time = int(time.mktime(time.strptime(current_time, pattern)))     
 
+    #string (2008-12-07)
+    aired = start_time[0:4]+'-'+start_time[4:6]+'-'+start_time[6:8]
+    genre = item['sportName']
+    
+
     length = 0
     try:
         length = int(item['length'])
-    except:
-        #Default to 24 hours if length not provided
-        length = 86400
+    except:        
         pass
     
 
     event_start = int(time.mktime(time.strptime(start_time, pattern)))
-    event_end = int(event_start + length)
+    if length != 0:
+        event_end = int(event_start + length)
+    else:
+        #Default to 24 hours if length not provided        
+        event_end = int(event_start + 86400)
 
     #Allow access to stream 10 minutes early
     event_start = event_start - (10*60)
@@ -155,6 +162,7 @@ def BUILD_VIDEO_LINK(item):
     print url
     print name + str(length) + " " + str(event_start) + " " + str(my_time) + " " + str(event_end)
         
+    info = {'plot':desc,'tvshowtitle':'NBCSN','title':name,'originaltitle':name,'duration':length,'aired':aired,'genre':genre}
     
     imgurl = "http://hdliveextra-pmd.edgesuite.net/HD/image_sports/mobile/"+item['image']+"_m50.jpg"    
     menu_name = filter(lambda x: x in string.printable, menu_name)
@@ -163,25 +171,26 @@ def BUILD_VIDEO_LINK(item):
         if free:
             url = url + "|User-Agent=" + UA_NBCSN
             menu_name = '[COLOR='+FREE+']'+menu_name + '[/COLOR]'
-            addLink(menu_name,url,name,imgurl,FANART) 
+            addLink(menu_name,url,name,imgurl,FANART,info) 
         elif FREE_ONLY == 'false':                
             menu_name = '[COLOR='+LIVE+']'+menu_name + '[/COLOR]'
-            addDir(menu_name,url,5,imgurl,FANART)             
+            addDir(menu_name,url,5,imgurl,FANART,None,True,info)             
     elif my_time < event_end:
         try:
             start_date = datetime.strptime(start_time, "%Y%m%d-%H%M")
         except TypeError:
             start_date = datetime.fromtimestamp(time.mktime(time.strptime(start_time, "%Y%m%d-%H%M")))
 
+        start_date = datetime.strftime(utc_to_local(start_date),xbmc.getRegion('dateshort')+' '+xbmc.getRegion('time').replace('%H%H','%H').replace(':%S',''))       
+        info['plot'] = 'Starting At: '+start_date+'\n'+info['plot']
+
         if free:
-            menu_name = '[COLOR='+FREE+']'+menu_name + '[/COLOR]'
-            start_date = datetime.strftime(utc_to_local(start_date),xbmc.getRegion('dateshort')+' '+xbmc.getRegion('time').replace('%H%H','%H').replace(':%S',''))       
-            addDir(menu_name + ' ' + start_date,'/disabled',999,imgurl,FANART,None,False)
+            menu_name = '[COLOR='+FREE_UPCOMING+']'+menu_name + '[/COLOR]'            
+            addDir(menu_name + ' ' + start_date,'/disabled',999,imgurl,FANART,None,False,info)
             
         elif FREE_ONLY == 'false':
-            menu_name = '[COLOR='+UPCOMING+']'+menu_name + '[/COLOR]'
-            start_date = datetime.strftime(utc_to_local(start_date),xbmc.getRegion('dateshort')+' '+xbmc.getRegion('time').replace('%H%H','%H').replace(':%S',''))       
-            addDir(menu_name + ' ' + start_date,'/disabled',999,imgurl,FANART,None,False)
+            menu_name = '[COLOR='+UPCOMING+']'+menu_name + '[/COLOR]'            
+            addDir(menu_name + ' ' + start_date,'/disabled',999,imgurl,FANART,None,False,info)
 
         
     
@@ -282,26 +291,32 @@ def utc_to_local(utc_dt):
     return local_dt.replace(microsecond=utc_dt.microsecond)
 
 
-def addLink(name,url,title,iconimage,fanart):
+def addLink(name,url,title,iconimage,fanart,info=None):
     ok=True
     liz=xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage,)
  
     liz.setProperty('fanart_image',fanart)
     liz.setProperty("IsPlayable", "true")
     liz.setInfo( type="Video", infoLabels={ "Title": title } )
-    liz.setInfo( type="Video", infoLabels={ "plotoutline": "TEST 123" } )
+    if info != None:
+        liz.setInfo( type="Video", infoLabels=info) 
     ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz)
+    xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
     return ok
 
 
-def addDir(name,url,mode,iconimage,fanart=None,scrape_type=None,isFolder=True): 
+def addDir(name,url,mode,iconimage,fanart=None,scrape_type=None,isFolder=True,info=None): 
     params = get_params()      
     ok=True
     u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&scrape_type="+urllib.quote_plus(str(scrape_type))+"&icon_image="+urllib.quote_plus(str(iconimage))
     liz=xbmcgui.ListItem(name, iconImage=ICON, thumbnailImage=iconimage)
     liz.setInfo( type="Video", infoLabels={ "Title": name } )
+    if info != None:
+        liz.setInfo( type="Video", infoLabels=info)        
+
     liz.setProperty('fanart_image', fanart)
     ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=isFolder)    
+    xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
     return ok
 
 
