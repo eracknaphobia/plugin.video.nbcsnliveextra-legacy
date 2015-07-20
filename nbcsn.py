@@ -111,11 +111,19 @@ def SCRAPE_VIDEOS(url,scrape_type=None):
 
 def BUILD_VIDEO_LINK(item):
     url = ''    
-    try:        
+    try:      
         url = item['iosStreamUrl']  
         if CDN == 1 and item['backupUrl'] != '':
             url = item['backupUrl']
     except:
+        try:
+            if item['videoSources']:
+                if 'iosStreamUrl' in item['videoSources'][0]:
+                    url =  item['videoSources'][0]['iosStreamUrl']
+                    if CDN == 1 and item['videoSources'][0]['backupUrl'] != '':
+                        url = item['backupUrl']
+        except:
+            pass
         pass
     
     #Set quality level based on user settings    
@@ -159,23 +167,24 @@ def BUILD_VIDEO_LINK(item):
     event_end = event_end + (60*60)
     
     
-    print url
-    print name + str(length) + " " + str(event_start) + " " + str(my_time) + " " + str(event_end)
+    #print url
+    print name + str(length) + " " + str(event_start) + " " + str(my_time) + " " + str(event_end) + " " + url + " FREE:" + str(free)
         
     info = {'plot':desc,'tvshowtitle':'NBCSN','title':name,'originaltitle':name,'duration':length,'aired':aired,'genre':genre}
     
     imgurl = "http://hdliveextra-pmd.edgesuite.net/HD/image_sports/mobile/"+item['image']+"_m50.jpg"    
     menu_name = filter(lambda x: x in string.printable, menu_name)
-    
-    if url != '' and (mode != 1 or (my_time >= event_start and my_time <= event_end) or 'Watch Golf Channel LIVE' in name):           
+    #and (mode != 1 or (my_time >= event_start and my_time <= event_end) or 'Watch Golf Channel LIVE' in name)
+    #if url != '' and (mode != 1 or (my_time >= event_start and my_time <= event_end) or 'Watch Golf Channel LIVE' in name):           
+    if url != '':
         if free:
             url = url + "|User-Agent=" + UA_NBCSN
             menu_name = '[COLOR='+FREE+']'+menu_name + '[/COLOR]'
             addLink(menu_name,url,name,imgurl,FANART,info) 
-        elif FREE_ONLY == 'false':                
+        elif FREE_ONLY == 'false':                        
             menu_name = '[COLOR='+LIVE+']'+menu_name + '[/COLOR]'
             addDir(menu_name,url,5,imgurl,FANART,None,True,info)             
-    elif my_time < event_end:
+    elif my_time < event_start:
         try:
             start_date = datetime.strptime(start_time, "%Y%m%d-%H%M")
         except TypeError:
