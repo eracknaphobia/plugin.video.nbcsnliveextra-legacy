@@ -11,12 +11,12 @@ import cookielib
 import base64
 #import string, random
 from resources.globals import *
-from resources.providers.twc import TWC
-from resources.providers.dish import DISH
 from resources.providers.adobe import ADOBE
+from resources.providers.charter import CHARTER
 from resources.providers.comcast import COMCAST
+from resources.providers.dish import DISH
 from resources.providers.direct_tv import DIRECT_TV
-
+from resources.providers.twc import TWC
 
 
 
@@ -168,7 +168,7 @@ def BUILD_VIDEO_LINK(item):
     
     
     #print url
-    print name + str(length) + " " + str(event_start) + " " + str(my_time) + " " + str(event_end) + " " + url + " FREE:" + str(free)
+    #print name + str(length) + " " + str(event_start) + " " + str(my_time) + " " + str(event_end) + " " + url + " FREE:" + str(free)
         
     info = {'plot':desc,'tvshowtitle':'NBCSN','title':name,'originaltitle':name,'duration':length,'aired':aired,'genre':genre}
     
@@ -216,6 +216,8 @@ def SIGN_STREAM(stream_url, stream_name, stream_icon):
         provider = COMCAST()
     elif MSO_ID == 'DTV':
         provider = DIRECT_TV()
+    elif MSO_ID == 'Charter_Direct':
+        provider = CHARTER()
     
     #provider = SET_PROVIDER()
 

@@ -242,12 +242,14 @@ if CLEAR == 'true':
 
 MSO_ID = ''
 if PROVIDER == '0':
+    MSO_ID = 'Charter_Direct'  
+elif PROVIDER == '1':    
     MSO_ID = 'Comcast_SSO'  
-elif PROVIDER == '1':
-    MSO_ID = 'Dish' 
 elif PROVIDER == '2':
-    MSO_ID = 'DTV'
+    MSO_ID = 'Dish' 
 elif PROVIDER == '3':
+    MSO_ID = 'DTV'
+elif PROVIDER == '4':
     MSO_ID = 'TWC'
 
 IDP_URL = 'https://sp.auth.adobe.com//adobe-services/1.0/authenticate/saml?domain_name=adobe.com&noflash=true&mso_id='+MSO_ID+'&requestor_id=nbcsports&no_iframe=true&client_type=iOS&client_version=1.9&redirect_url=http://adobepass.ios.app/'

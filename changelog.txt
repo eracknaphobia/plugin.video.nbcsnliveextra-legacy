@@ -1,3 +1,6 @@
+v2015.7.28
+- Added Charter login support
+
 v2015.7.20
 - Added additional code to scrape new video url location
 - Changed formating to make any event that has a stream url playable

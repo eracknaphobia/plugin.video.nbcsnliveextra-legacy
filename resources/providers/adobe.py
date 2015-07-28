@@ -50,7 +50,7 @@ class ADOBE():
         cookies = ''
         for cookie in cj:
             #Possibly two JSESSION cookies being passed, may need to fix
-            if cookie.name == "BIGipServerAdobe_Pass_Prod" or cookie.name == "client_type" or cookie.name == "client_version" or cookie.name == "JSESSIONID" or cookie.name == "redirect_url":
+            if (cookie.name == "BIGipServerAdobe_Pass_Prod" or cookie.name == "client_type" or cookie.name == "client_version" or cookie.name == "JSESSIONID" or cookie.name == "redirect_url") and cookie.path == "/":
                 cookies = cookies + cookie.name + "=" + cookie.value + "; "
         
 
@@ -62,18 +62,25 @@ class ADOBE():
                             "Content-Type": "application/x-www-form-urlencoded",
                             "Proxy-Connection": "keep-alive",
                             "Connection": "keep-alive",
-                            #"Origin": "https://ids.rr.com",
-                            #"Referer": "https://ids.rr.com/nidp/saml2/sso?sid=0",
                             "Origin": ORIGIN,
                             "Referer": REFERER,
                             "Cookie": cookies,
                             "User-Agent": UA_IPHONE}
 
+
         body = urllib.urlencode({'SAMLResponse' : saml_response,
                                  'RelayState' : relay_state
                                  })
-        
-        response, content = http.request(url, 'POST', headers=headers, body=body)
+
+
+        #sys.exit()
+        response, content = http.request(url, 'POST', headers=headers, body=body)        
+        print 'POST_ASSERTION_CONSUMER_SERVICE------------------------------------------------'
+        print headers
+        print body
+        print response
+        print content
+        print '-------------------------------------------------------------------------------'
         
     
 
@@ -111,8 +118,10 @@ class ADOBE():
         
        
         response, content = http.request(url, 'POST', headers=headers, body=data)
+        print 'POST_SESSION_DEVICE------------------------------------------------------------'
         print response
         print content
+        print '-------------------------------------------------------------------------------'
         
         auth_token = FIND(content,'<authnToken>','</authnToken>')
         print "AUTH TOKEN"        
