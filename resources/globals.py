@@ -242,15 +242,19 @@ if CLEAR == 'true':
 
 MSO_ID = ''
 if PROVIDER == '0':
-    MSO_ID = 'Charter_Direct'  
+    MSO_ID = 'auth_cableone_net'
 elif PROVIDER == '1':    
+    MSO_ID = 'Charter_Direct'  
+elif PROVIDER == '2':    
     MSO_ID = 'Comcast_SSO'  
-elif PROVIDER == '2':
-    MSO_ID = 'Dish' 
 elif PROVIDER == '3':
-    MSO_ID = 'DTV'
+    MSO_ID = 'Dish' 
 elif PROVIDER == '4':
+    MSO_ID = 'DTV'
+elif PROVIDER == '5':
     MSO_ID = 'TWC'
+elif PROVIDER == '6':
+    MSO_ID = 'Verizon'
 
 IDP_URL = 'https://sp.auth.adobe.com//adobe-services/1.0/authenticate/saml?domain_name=adobe.com&noflash=true&mso_id='+MSO_ID+'&requestor_id=nbcsports&no_iframe=true&client_type=iOS&client_version=1.9&redirect_url=http://adobepass.ios.app/'
 ORIGIN = ''
@@ -258,9 +262,9 @@ REFERER = ''
 
 
 #User Agents
-UA_IPHONE = 'Mozilla/5.0 (iPhone; CPU iPhone OS 8_3 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko)'
+UA_IPHONE = 'Mozilla/5.0 (iPhone; CPU iPhone OS 8_4 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Mobile/12H143'
 UA_PC = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.81 Safari/537.36'
-UA_ADOBE_PASS = 'AdobePassNativeClient/1.9 (iPhone; U; CPU iPhone OS 8.3 like Mac OS X; en-us)'
+UA_ADOBE_PASS = 'AdobePassNativeClient/1.9 (iPhone; U; CPU iPhone OS 8.4 like Mac OS X; en-us)'
 UA_NBCSN = 'NBCSports/1030 CFNetwork/711.3.18 Darwin/14.0.0'
 
 

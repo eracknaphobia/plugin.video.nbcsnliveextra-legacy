@@ -17,7 +17,8 @@ from resources.providers.comcast import COMCAST
 from resources.providers.dish import DISH
 from resources.providers.direct_tv import DIRECT_TV
 from resources.providers.twc import TWC
-
+from resources.providers.verizon import VERIZON
+from resources.providers.cable_one import CABLE_ONE
 
 
 def CATEGORIES():           
@@ -55,7 +56,7 @@ def FEATURED(url):
 
 
 def SCRAPE_VIDEOS(url,scrape_type=None):
-    print url
+    #print url
     req = urllib2.Request(url)
     #req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36')
     req.add_header('Connection', 'keep-alive')
@@ -176,6 +177,14 @@ def BUILD_VIDEO_LINK(item):
     menu_name = filter(lambda x: x in string.printable, menu_name)
     #and (mode != 1 or (my_time >= event_start and my_time <= event_end) or 'Watch Golf Channel LIVE' in name)
     #if url != '' and (mode != 1 or (my_time >= event_start and my_time <= event_end) or 'Watch Golf Channel LIVE' in name):           
+    try:
+        start_date = datetime.strptime(start_time, "%Y%m%d-%H%M")
+    except TypeError:
+        start_date = datetime.fromtimestamp(time.mktime(time.strptime(start_time, "%Y%m%d-%H%M")))
+
+    start_date = datetime.strftime(utc_to_local(start_date),xbmc.getRegion('dateshort')+' '+xbmc.getRegion('time').replace('%H%H','%H').replace(':%S',''))       
+    info['plot'] = 'Starting at: '+start_date+'\n\n'+info['plot']
+
     if url != '':
         if free:
             url = url + "|User-Agent=" + UA_NBCSN
@@ -185,14 +194,6 @@ def BUILD_VIDEO_LINK(item):
             menu_name = '[COLOR='+LIVE+']'+menu_name + '[/COLOR]'
             addDir(menu_name,url,5,imgurl,FANART,None,True,info)             
     elif my_time < event_start:
-        try:
-            start_date = datetime.strptime(start_time, "%Y%m%d-%H%M")
-        except TypeError:
-            start_date = datetime.fromtimestamp(time.mktime(time.strptime(start_time, "%Y%m%d-%H%M")))
-
-        start_date = datetime.strftime(utc_to_local(start_date),xbmc.getRegion('dateshort')+' '+xbmc.getRegion('time').replace('%H%H','%H').replace(':%S',''))       
-        info['plot'] = 'Starting At: '+start_date+'\n'+info['plot']
-
         if free:
             menu_name = '[COLOR='+FREE_UPCOMING+']'+menu_name + '[/COLOR]'            
             addDir(menu_name + ' ' + start_date,'/disabled',999,imgurl,FANART,None,False,info)
@@ -218,7 +219,11 @@ def SIGN_STREAM(stream_url, stream_name, stream_icon):
         provider = DIRECT_TV()
     elif MSO_ID == 'Charter_Direct':
         provider = CHARTER()
-    
+    elif MSO_ID == 'Verizon':
+        provider = VERIZON()
+    elif MSO_ID == 'auth_cableone_net':
+        provider = CABLE_ONE()
+
     #provider = SET_PROVIDER()
 
     if provider != None:
