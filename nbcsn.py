@@ -19,6 +19,7 @@ from resources.providers.direct_tv import DIRECT_TV
 from resources.providers.twc import TWC
 from resources.providers.verizon import VERIZON
 from resources.providers.cable_one import CABLE_ONE
+from resources.providers.optimum import OPTIMUM
 
 
 def CATEGORIES():           
@@ -223,6 +224,8 @@ def SIGN_STREAM(stream_url, stream_name, stream_icon):
         provider = VERIZON()
     elif MSO_ID == 'auth_cableone_net':
         provider = CABLE_ONE()
+    elif MSO_ID == 'Cablevision':
+        provider = OPTIMUM()
 
     #provider = SET_PROVIDER()
 

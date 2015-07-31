@@ -47,12 +47,13 @@ def GET_RESOURCE_ID():
     Accept-Encoding: gzip, deflate
     Connect
     """
-    req = urllib2.Request(ROOT_URL+'passnbc.xml')  
-    req.add_header('User-Agent',  UA_NBCSN)
-    response = urllib2.urlopen(req)        
-    resource_id = response.read()
-    response.close() 
-    resource_id = resource_id.replace('\n', ' ').replace('\r', '')
+    #req = urllib2.Request(ROOT_URL+'passnbc.xml')  
+    #req.add_header('User-Agent',  UA_NBCSN)
+    #response = urllib2.urlopen(req)        
+    #resource_id = response.read()
+    #response.close() 
+    #resource_id = resource_id.replace('\n', ' ').replace('\r', '')
+    resource_id = '<rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title>nbcsports</title><item><title>NBC Sports PGA Event</title><guid>123456789</guid><media:rating scheme="urn:vchip">TV-PG</media:rating></item></channel></rss>'
 
     return resource_id
 
@@ -252,8 +253,10 @@ elif PROVIDER == '3':
 elif PROVIDER == '4':
     MSO_ID = 'DTV'
 elif PROVIDER == '5':
-    MSO_ID = 'TWC'
+    MSO_ID = 'Cablevision'
 elif PROVIDER == '6':
+    MSO_ID = 'TWC'
+elif PROVIDER == '7':
     MSO_ID = 'Verizon'
 
 IDP_URL = 'https://sp.auth.adobe.com//adobe-services/1.0/authenticate/saml?domain_name=adobe.com&noflash=true&mso_id='+MSO_ID+'&requestor_id=nbcsports&no_iframe=true&client_type=iOS&client_version=1.9&redirect_url=http://adobepass.ios.app/'
