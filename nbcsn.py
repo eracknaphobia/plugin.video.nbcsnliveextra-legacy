@@ -135,7 +135,7 @@ def BUILD_VIDEO_LINK(item):
     menu_name = item['title']
     name = menu_name                
     desc = item['info']     
-    free = item['free']
+    free = int(item['free'])
 
     # Highlight active streams   
     start_time = item['start']
