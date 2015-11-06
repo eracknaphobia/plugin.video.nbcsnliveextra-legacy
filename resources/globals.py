@@ -111,13 +111,12 @@ def SET_STREAM_QUALITY(url):
         #q_lvl = "4296000"
         q_lvl_golf = "4296k"
     
-    
+    '''
     url = url.replace('master.m3u8',q_lvl_golf+'/proge.m3u8')       
     url = url.replace('manifest(format=m3u8-aapl-v3)','QualityLevels('+q_lvl+')/Manifest(video,format=m3u8-aapl-v3,audiotrack=audio_en_0)')       
     url = url.replace('manifest(format=m3u8-aapl,filtername=vodcut)','QualityLevels('+q_lvl+')/Manifest(video,format=m3u8-aapl,filtername=vodcut)')
     url = url.replace('manifest(format=m3u8-aapl-v3,filtername=vodcut)','QualityLevels('+q_lvl+')/Manifest(video,format=m3u8-aapl-v3,audiotrack=audio_en_0,filtername=vodcut)')
-
-
+    '''
     return url
 
 def SAVE_COOKIE(cj):

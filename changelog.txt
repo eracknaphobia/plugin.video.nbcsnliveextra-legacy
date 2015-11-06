@@ -1,4 +1,7 @@
 v2015.11.3
+- Removed Quality selection for temporary fix for all streams
+
+v2015.11.3
 - Fixed golf channel
 
 v2015.9.17
