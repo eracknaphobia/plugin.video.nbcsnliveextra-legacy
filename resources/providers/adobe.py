@@ -304,9 +304,9 @@ class ADOBE():
         #print stream_cookie
 
         #Set quality level based on user settings
-        url = SET_STREAM_QUALITY(url)            
+        #url = SET_STREAM_QUALITY(url)            
 
-        url = url+"|User-Agent="+UA_NBCSN
+        #url = url+"|User-Agent="+UA_NBCSN
         #if stream_cookie != '':
         #url = url + "&Cookie="+stream_cookie
 
