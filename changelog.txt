@@ -1,4 +1,4 @@
-v2015.11.3
+v2015.11.6
 - Removed Quality selection for temporary fix for all streams
 
 v2015.11.3
