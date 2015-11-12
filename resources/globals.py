@@ -315,7 +315,7 @@ ROOT_URL = 'http://stream.nbcsports.com/data/mobile/'
 settings = xbmcaddon.Addon(id='plugin.video.nbcsnliveextra')
 
 #Main settings
-QUALITY = int(settings.getSetting(id="quality"))
+#QUALITY = int(settings.getSetting(id="quality"))
 #USER_AGENT = str(settings.getSetting(id="user-agent"))
 CDN = int(settings.getSetting(id="cdn"))
 USERNAME = str(settings.getSetting(id="username"))
