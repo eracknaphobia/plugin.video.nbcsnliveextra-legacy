@@ -154,8 +154,8 @@ def SET_STREAM_QUALITY(url):
                 
             temp_url = temp_url.rstrip() + "|User-Agent=" + UA_NBCSN
             
-            if cookies != '':                
-                temp_url = temp_url + "&Cookie=" + cookies
+            #if cookies != '':                
+            #temp_url = temp_url + "&Cookie=" + cookies
             
             stream_title.append(desc)
             stream_url.update({desc:temp_url})
