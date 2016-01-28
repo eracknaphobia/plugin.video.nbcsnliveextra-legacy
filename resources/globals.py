@@ -143,15 +143,20 @@ def SET_STREAM_QUALITY(url):
     for temp_url in line:
         if '#EXT' not in temp_url:
             temp_url = temp_url.rstrip()
+            start = 0
             if 'http' not in temp_url:
                 if 'master' in url:
                     start = url.find('master')
                 elif 'manifest' in url:
-                    start = url.find('manifest')
-                
-                replace_url_chunk = url[start:url.find('?')]                
-                temp_url = url.replace(replace_url_chunk,temp_url)
-                
+                    start = url.find('manifest')                
+            
+            if url.find('?') != -1:
+                replace_url_chunk = url[start:url.find('?')]    
+            else:
+                replace_url_chunk = url[start:]    
+            
+            
+            temp_url = url.replace(replace_url_chunk,temp_url)              
             temp_url = temp_url.rstrip() + "|User-Agent=" + UA_NBCSN
             
             #if cookies != '':                
@@ -342,7 +347,7 @@ elif PROVIDER == 'Cox':
 elif PROVIDER == 'Dish Network':
     MSO_ID = 'Dish' 
 elif PROVIDER == 'Direct TV':
-    MSO_ID = 'DTV'
+    MSO_ID = 'DTV'    
 elif PROVIDER == 'Optimum':
     MSO_ID = 'Cablevision'
 elif PROVIDER == 'Time Warner Cable':
@@ -352,7 +357,8 @@ elif PROVIDER == 'Verizon':
 elif PROVIDER == 'Bright House':
     MSO_ID = 'Brighthouse'
 
-IDP_URL = 'https://sp.auth.adobe.com//adobe-services/1.0/authenticate/saml?domain_name=adobe.com&noflash=true&mso_id='+MSO_ID+'&requestor_id=nbcsports&no_iframe=true&client_type=iOS&client_version=1.9&redirect_url=http://adobepass.ios.app/'
+
+IDP_URL = 'https://sp.auth.adobe.com/adobe-services/1.0/authenticate/saml?domain_name=adobe.com&noflash=true&mso_id='+MSO_ID+'&requestor_id=nbcsports&no_iframe=true&client_type=iOS&client_version=1.9.2&redirect_url=http://adobepass.ios.app/'           
 ORIGIN = ''
 REFERER = ''
 

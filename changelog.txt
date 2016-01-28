@@ -1,3 +1,7 @@
+v2016.1.28
+- Fix for Dish login
+- Minor bug fixes
+
 v2016.1.22
 - Fix for Direct TV login
 
