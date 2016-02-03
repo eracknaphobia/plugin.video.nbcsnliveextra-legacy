@@ -117,7 +117,7 @@ def SET_STREAM_QUALITY(url):
     stream_url = {}
     stream_title = []
 
-    #Open master file a get cookie    
+    #Open master file a get cookie(s)
     cj = cookielib.LWPCookieJar()
     opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
     opener.addheaders = [ ("Accept", "*/*"),
@@ -127,7 +127,8 @@ def SET_STREAM_QUALITY(url):
 
     resp = opener.open(url)
     master = resp.read()
-    resp.close()   
+    resp.close()  
+
     cookies = '' 
     for cookie in cj:                    
         if cookies != '':
@@ -135,6 +136,7 @@ def SET_STREAM_QUALITY(url):
         cookies = cookies + cookie.name + "=" + cookie.value
     
     print master
+    print cookies
     line = re.compile("(.+?)\n").findall(master)  
     
     xplayback = ''.join([random.choice('0123456789ABCDEF') for x in range(32)])
@@ -159,8 +161,8 @@ def SET_STREAM_QUALITY(url):
             temp_url = url.replace(replace_url_chunk,temp_url)              
             temp_url = temp_url.rstrip() + "|User-Agent=" + UA_NBCSN
             
-            #if cookies != '':                
-            #temp_url = temp_url + "&Cookie=" + cookies
+            if cookies != '':                
+                temp_url = temp_url + "&Cookie=" + cookies
             
             stream_title.append(desc)
             stream_url.update({desc:temp_url})
@@ -180,10 +182,14 @@ def SET_STREAM_QUALITY(url):
     
     if len(stream_title) > 0:
         ret = 0      
-        stream_title.sort(key=natural_sort_key)            
-        dialog = xbmcgui.Dialog() 
-        ret = dialog.select('Choose Stream Quality', stream_title)
-        
+        stream_title.sort(key=natural_sort_key)  
+
+        if PLAY_BEST:            
+            ret = len(stream_title)-1            
+        else:
+            dialog = xbmcgui.Dialog() 
+            ret = dialog.select('Choose Stream Quality', stream_title)
+            print ret
         if ret >=0:
             url = stream_url.get(stream_title[ret])           
         else:
@@ -213,7 +219,7 @@ def natural_sort_key(s):
 
 def SAVE_COOKIE(cj):
     # Cookielib patch for Year 2038 problem
-    # Possibly wrap this in if to check if box is indeed 32bit
+    # Possibly wrap this in if to check if device is using a 32bit OS
     for cookie in cj:
         # Jan, 1 2038
         if cookie.expires >= 2145916800:
@@ -329,6 +335,7 @@ PROVIDER = str(settings.getSetting(id="provider"))
 CLEAR = str(settings.getSetting(id="clear_data"))
 FREE_ONLY = str(settings.getSetting(id="free_only"))
 PLAY_MAIN = str(settings.getSetting(id="play_main"))
+PLAY_BEST = str(settings.getSetting(id="play_best"))
 
 if CLEAR == 'true':
    CLEAR_SAVED_DATA()
