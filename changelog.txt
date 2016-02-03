@@ -1,3 +1,6 @@
+v2016.2.3.2
+- Fixed new bugs released in prev version
+
 v2016.2.3
 - Add setting to automatically play best stream available
 - Bug fix

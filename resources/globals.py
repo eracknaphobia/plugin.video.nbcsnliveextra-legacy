@@ -161,8 +161,8 @@ def SET_STREAM_QUALITY(url):
             temp_url = url.replace(replace_url_chunk,temp_url)              
             temp_url = temp_url.rstrip() + "|User-Agent=" + UA_NBCSN
             
-            if cookies != '':                
-                temp_url = temp_url + "&Cookie=" + cookies
+            #if cookies != '':                
+            #temp_url = temp_url + "&Cookie=" + cookies
             
             stream_title.append(desc)
             stream_url.update({desc:temp_url})
@@ -181,10 +181,11 @@ def SET_STREAM_QUALITY(url):
     
     
     if len(stream_title) > 0:
-        ret = 0      
+        ret =-1      
         stream_title.sort(key=natural_sort_key)  
-
-        if PLAY_BEST:            
+        print "PLAY BEST SETTING"
+        print PLAY_BEST
+        if str(PLAY_BEST) == 'true':
             ret = len(stream_title)-1            
         else:
             dialog = xbmcgui.Dialog() 
