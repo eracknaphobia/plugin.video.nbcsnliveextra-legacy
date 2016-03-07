@@ -131,7 +131,7 @@ def BUILD_VIDEO_LINK(item):
         pass
     
     #Set quality level based on user settings    
-    #url = SET_STREAM_QUALITY(url)                      
+    #url = SET_STREAM_QUALITY(url)                    
     
     
     menu_name = item['title']
@@ -145,9 +145,11 @@ def BUILD_VIDEO_LINK(item):
     start_time = item['start']
     pattern = "%Y%m%d-%H%M"
     current_time =  datetime.utcnow().strftime(pattern) 
-    my_time = int(time.mktime(time.strptime(current_time, pattern)))     
-
+    #my_time = int(time.mktime(time.strptime(current_time, pattern)))     
+    my_time = datetime.strptime(current_time,pattern)
+    
     #string (2008-12-07)
+    #20160304-1800
     aired = start_time[0:4]+'-'+start_time[4:6]+'-'+start_time[6:8]
     genre = item['sportName']
     
@@ -158,21 +160,24 @@ def BUILD_VIDEO_LINK(item):
     except:        
         pass
     
-
-    event_start = int(time.mktime(time.strptime(start_time, pattern)))
+    
+    #event_start = int(time.mktime(time.strptime(start_time, pattern)))  
+    event_start = datetime.strptime(start_time,pattern)
+    
+    #event_start = 0
+    '''
     if length != 0:
         event_end = int(event_start + length)
     else:
         #Default to 24 hours if length not provided        
         event_end = int(event_start + 86400)
-
+    '''
     #Allow access to stream 10 minutes early
-    event_start = event_start - (10*60)
+    #event_start = event_start - (10*60)
 
     #Allow access to stream an hour after it's supposed to end
-    event_end = event_end + (60*60)
-    
-    
+    #event_end = event_end + (60*60)
+        
     #print url
     #print name + str(length) + " " + str(event_start) + " " + str(my_time) + " " + str(event_end) + " " + url + " FREE:" + str(free)
         

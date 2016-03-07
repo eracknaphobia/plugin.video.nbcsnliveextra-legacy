@@ -1,3 +1,6 @@
+2016.3.7
+- Fix for mktime error
+
 v2016.2.3.2
 - Fixed new bugs released in prev version
 
