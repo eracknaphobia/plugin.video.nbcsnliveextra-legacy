@@ -1,4 +1,7 @@
 2016.3.8
+- Fix for time error attempt #3
+
+2016.3.8
 - Fix for time error attempt #2
 
 2016.3.7

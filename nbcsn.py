@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 import time
 import cookielib
 import base64
-#import string, random
+
 from resources.globals import *
 from resources.providers.adobe import ADOBE
 from resources.providers.charter import CHARTER
@@ -144,13 +144,16 @@ def BUILD_VIDEO_LINK(item):
     # Highlight active streams   
     start_time = item['start']
     pattern = "%Y%m%d-%H%M"
-    current_time =  datetime.utcnow().strftime(pattern) 
+    print "Start Time"
+    print start_time
+    #current_time =  datetime.utcnow().strftime(pattern) 
     #my_time = int(time.mktime(time.strptime(current_time, pattern)))         
+    '''
     try:
         my_time = datetime.strptime(current_time,pattern)
     except TypeError:
         my_time = datetime.fromtimestamp(time.mktime(time.strptime(current_time, pattern)))
-    
+    '''
     #string (2008-12-07)
     #20160304-1800
     aired = start_time[0:4]+'-'+start_time[4:6]+'-'+start_time[6:8]
@@ -166,11 +169,12 @@ def BUILD_VIDEO_LINK(item):
     
     #event_start = int(time.mktime(time.strptime(start_time, pattern)))  
     #event_start = datetime.strptime(start_time,pattern)
+    '''
     try:
         event_start = datetime.strptime(start_time,pattern)
     except TypeError:
         event_start = datetime.fromtimestamp(time.mktime(time.strptime(start_time, pattern)))
-    
+    '''
     #event_start = 0
     '''
     if length != 0:
@@ -194,14 +198,19 @@ def BUILD_VIDEO_LINK(item):
     menu_name = filter(lambda x: x in string.printable, menu_name)
     #and (mode != 1 or (my_time >= event_start and my_time <= event_end) or 'Watch Golf Channel LIVE' in name)
     #if url != '' and (mode != 1 or (my_time >= event_start and my_time <= event_end) or 'Watch Golf Channel LIVE' in name):           
+    ''' 
     try:
         start_date = datetime.strptime(start_time, "%Y%m%d-%H%M")
-    except TypeError:
-        start_date = datetime.fromtimestamp(time.mktime(time.strptime(start_time, "%Y%m%d-%H%M")))
-
+        #start_date = datetime.strftime(utc_to_local(start_date),xbmc.getRegion('dateshort')+' '+xbmc.getRegion('time').replace('%H%H','%H').replace(':%S',''))       
+        start_date = datetime.strftime(start_date,"%Y-%m-%d %h:%M")       
+        info['plot'] = 'Starting at: '+start_date+'\n\n'+info['plot']
+    except:
+        start_date = 'Unavailable'        
+        #start_date = datetime.fromtimestamp(time.mktime(time.strptime(start_time, "%Y%m%d-%H%M")))
+    '''
+    start_date = stringToDate(start_time, "%Y%m%d-%H%M")
     start_date = datetime.strftime(utc_to_local(start_date),xbmc.getRegion('dateshort')+' '+xbmc.getRegion('time').replace('%H%H','%H').replace(':%S',''))       
     info['plot'] = 'Starting at: '+start_date+'\n\n'+info['plot']
-
     
     if url != '':
         if free:
@@ -217,8 +226,9 @@ def BUILD_VIDEO_LINK(item):
                 addPremiumLink(menu_name,url,imgurl,FANART,None,info)             
             else:
                 addDir(menu_name,url,5,imgurl,FANART,None,True,info)             
-
-    elif my_time < event_start:
+    
+    else:
+        #elif my_time < event_start:
         if free:
             menu_name = '[COLOR='+FREE_UPCOMING+']'+menu_name + '[/COLOR]'            
             if str(PLAY_MAIN) == 'true':
@@ -229,6 +239,7 @@ def BUILD_VIDEO_LINK(item):
         elif FREE_ONLY == 'false':
             menu_name = '[COLOR='+UPCOMING+']'+menu_name + '[/COLOR]'            
             addDir(menu_name + ' ' + start_date,'/disabled',999,imgurl,FANART,None,False,info)
+
 
         
     

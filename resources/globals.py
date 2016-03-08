@@ -11,18 +11,16 @@ import cookielib
 import base64
 from StringIO import StringIO
 import gzip
+from datetime import datetime, timedelta
 
 
-#Provider Files
-#from resources.providers.twc import TWC
-#from resources.providers.dish import DISH
-#from resources.providers.adobe import ADOBE
-#from resources.providers.comcast import COMCAST
+def stringToDate(string, date_format):
+    try:
+        date = datetime.strptime(str(string), date_format)
+    except TypeError:
+        date = datetime(*(time.strptime(str(string), date_format)[0:6]))                
 
-
-
-
-
+    return date
 
 def FIND(source,start_str,end_str):    
     start = source.find(start_str)
