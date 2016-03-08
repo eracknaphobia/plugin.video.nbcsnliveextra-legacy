@@ -145,8 +145,11 @@ def BUILD_VIDEO_LINK(item):
     start_time = item['start']
     pattern = "%Y%m%d-%H%M"
     current_time =  datetime.utcnow().strftime(pattern) 
-    #my_time = int(time.mktime(time.strptime(current_time, pattern)))     
-    my_time = datetime.strptime(current_time,pattern)
+    #my_time = int(time.mktime(time.strptime(current_time, pattern)))         
+    try:
+        my_time = datetime.strptime(current_time,pattern)
+    except TypeError:
+        my_time = datetime.fromtimestamp(time.mktime(time.strptime(current_time, pattern)))
     
     #string (2008-12-07)
     #20160304-1800
@@ -162,7 +165,11 @@ def BUILD_VIDEO_LINK(item):
     
     
     #event_start = int(time.mktime(time.strptime(start_time, pattern)))  
-    event_start = datetime.strptime(start_time,pattern)
+    #event_start = datetime.strptime(start_time,pattern)
+    try:
+        event_start = datetime.strptime(start_time,pattern)
+    except TypeError:
+        event_start = datetime.fromtimestamp(time.mktime(time.strptime(start_time, pattern)))
     
     #event_start = 0
     '''
