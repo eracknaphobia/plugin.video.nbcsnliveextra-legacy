@@ -22,6 +22,7 @@ from resources.providers.cable_one import CABLE_ONE
 from resources.providers.optimum import OPTIMUM
 from resources.providers.cox import COX
 from resources.providers.bright_house import BRIGHT_HOUSE
+from resources.providers.frontier import FRONTIER
 
 
 def CATEGORIES():           
@@ -268,6 +269,8 @@ def SIGN_STREAM(stream_url, stream_name, stream_icon):
         provider = COX()
     elif MSO_ID == 'Brighthouse':
         provider = BRIGHT_HOUSE()
+    elif MSO_ID == 'FRONTIER':
+        provider = FRONTIER()
 
     #provider = SET_PROVIDER()
 

@@ -1,3 +1,6 @@
+2016.4.19
+- Added Frontier support
+
 2016.3.9
 - Fix for time error attempt #3
 
