@@ -59,18 +59,8 @@ def GET_SIGNED_REQUESTOR_ID():
 
     ##################################################
     # Use this call to get Adobe's Signed ID
-    ##################################################
-    """
-    GET http://stream.nbcsports.com/data/mobile/configuration-2014-RSN-Sections.json HTTP/1.1
-    Host: stream.nbcsports.com
-    Connection: keep-alive
-    Accept: */*
-    User-Agent: NBCSports/1030 CFNetwork/711.3.18 Darwin/14.0.0
-    Accept-Language: en-us
-    Accept-Encoding: gzip, deflate
-    Connection: keep-alive
-    """
-    req = urllib2.Request(ROOT_URL+'configuration-2014-RSN-Sections.json')  
+    ##################################################    
+    req = urllib2.Request(ROOT_URL+'apps/NBCSports/configuration-ios.json')
     req.add_header('User-Agent',  UA_NBCSN)
     response = urllib2.urlopen(req)        
 

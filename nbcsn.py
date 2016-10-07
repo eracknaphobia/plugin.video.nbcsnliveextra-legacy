@@ -33,9 +33,9 @@ def CATEGORIES():
 
 def LIVE_AND_UPCOMING():      
     #LIVE        
-    SCRAPE_VIDEOS(ROOT_URL+'mcms/prod/nbc-live-ios.json')
+    SCRAPE_VIDEOS(ROOT_URL+'apps/NBCSports/feeds/v1/nbc-sports-live-v1-ios.json')
     #UPCOMING
-    SCRAPE_VIDEOS(ROOT_URL+'mcms/prod/nbc-upcoming-ios.json')
+    SCRAPE_VIDEOS(ROOT_URL+'apps/NBCSports/feeds/v1/nbc-sports-upcoming-v1-ios.json')
 
 
 def GET_ALL_SPORTS():    
@@ -67,7 +67,7 @@ def SCRAPE_VIDEOS(url,scrape_type=None):
     req.add_header('Accept', '*/*')
     req.add_header('User-Agent', UA_NBCSN)
     req.add_header('Accept-Language', 'en-us')
-    req.add_header('Accept-Encoding', 'gzip, deflate')
+    req.add_header('Accept-Encoding', 'deflate')
     
 
     response = urllib2.urlopen(req)    

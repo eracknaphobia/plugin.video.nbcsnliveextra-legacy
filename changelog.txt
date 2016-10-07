@@ -1,3 +1,6 @@
+2016.10.7
+- Fixed broken urls
+
 2016.4.19
 - Added Frontier support
 
