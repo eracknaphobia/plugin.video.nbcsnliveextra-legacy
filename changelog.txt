@@ -1,3 +1,7 @@
+2016.10.17
+- Fixed appending cookie to stream issue
+- Fixed featured, replays, and highlight items
+
 2016.10.7
 - Fixed broken urls
 

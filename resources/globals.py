@@ -59,8 +59,19 @@ def GET_SIGNED_REQUESTOR_ID():
 
     ##################################################
     # Use this call to get Adobe's Signed ID
-    ##################################################    
-    req = urllib2.Request(ROOT_URL+'apps/NBCSports/configuration-ios.json')
+    ##################################################
+    """
+    GET http://stream.nbcsports.com/data/mobile/configuration-2014-RSN-Sections.json HTTP/1.1
+    http://stream.nbcsports.com/data/mobile/apps/NBCSports/configuration-ios.json
+    Host: stream.nbcsports.com
+    Connection: keep-alive
+    Accept: */*
+    User-Agent: NBCSports/1030 CFNetwork/711.3.18 Darwin/14.0.0
+    Accept-Language: en-us
+    Accept-Encoding: gzip, deflate
+    Connection: keep-alive
+    """
+    req = urllib2.Request(ROOT_URL+'apps/NBCSports/configuration-ios.json')  
     req.add_header('User-Agent',  UA_NBCSN)
     response = urllib2.urlopen(req)        
 
@@ -75,7 +86,7 @@ def GET_SIGNED_REQUESTOR_ID():
     return signed_requestor_id
 
 def SET_STREAM_QUALITY(url):
-    print url
+    xbmc.log(url)
     '''
     if QUALITY == 0:
         q_lvl = "200000"
@@ -123,8 +134,8 @@ def SET_STREAM_QUALITY(url):
             cookies = cookies + "; "
         cookies = cookies + cookie.name + "=" + cookie.value
     
-    print master
-    print cookies
+    xbmc.log(master)
+    xbmc.log(cookies)
     line = re.compile("(.+?)\n").findall(master)  
     
     xplayback = ''.join([random.choice('0123456789ABCDEF') for x in range(32)])
@@ -149,8 +160,10 @@ def SET_STREAM_QUALITY(url):
             temp_url = url.replace(replace_url_chunk,temp_url)              
             temp_url = temp_url.rstrip() + "|User-Agent=" + UA_NBCSN
             
-            #if cookies != '':                
-            #temp_url = temp_url + "&Cookie=" + cookies
+            
+            if '_alid_=' in cookies:                
+                temp_url = temp_url + "&Cookie=" + cookies
+            
             
             stream_title.append(desc)
             stream_url.update({desc:temp_url})

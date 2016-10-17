@@ -26,20 +26,20 @@ from resources.providers.frontier import FRONTIER
 
 
 def CATEGORIES():           
-    addDir('Live & Upcoming','/live',1,ICON,FANART)
-    addDir('Featured',ROOT_URL+'mcms/prod/nbc-featured.json',2,ICON,FANART)
-    addDir('On NBC Sports','/replays',3,ICON,FANART)
-
-
-def LIVE_AND_UPCOMING():      
-    #LIVE        
-    SCRAPE_VIDEOS(ROOT_URL+'apps/NBCSports/feeds/v1/nbc-sports-live-v1-ios.json')
-    #UPCOMING
-    SCRAPE_VIDEOS(ROOT_URL+'apps/NBCSports/feeds/v1/nbc-sports-upcoming-v1-ios.json')
+    req = urllib2.Request('http://stream.nbcsports.com/data/mobile/apps/NBCSports/configuration-ios.json')        
+    response = urllib2.urlopen(req)   
+    json_source = json.load(response)                       
+    response.close()   
+    xbmc.log(str(json_source))
+    for item in json_source['brands'][0]['sub-nav']:
+        display_name = item['display-name']
+        url = item['feed-url']
+        addDir(display_name,url,4,ICON,FANART)
 
 
 def GET_ALL_SPORTS():    
-    req = urllib2.Request(ROOT_URL+'configuration-liveextra-ios.json')    
+    req = urllib2.Request(ROOT_URL+'apps/NBCSports/configuration-ios.json')    
+    #http://stream.nbcsports.com/data/mobile/apps/NBCSports/configuration-ios.json
     response = urllib2.urlopen(req)   
     json_source = json.load(response)                       
     response.close()    
@@ -53,14 +53,8 @@ def GET_ALL_SPORTS():
         pass
 
 
-def FEATURED(url):
-    addDir('Full Replays',url,4,ICON,FANART,"replay")
-    addDir('Showcase',url,4,ICON,FANART,"showCase")
-    addDir('Spotlight',url,4,ICON,FANART,"spotlight") 
-
-
 def SCRAPE_VIDEOS(url,scrape_type=None):
-    #print url
+    xbmc.log(url)
     req = urllib2.Request(url)
     #req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36')
     req.add_header('Connection', 'keep-alive')
@@ -74,44 +68,12 @@ def SCRAPE_VIDEOS(url,scrape_type=None):
     json_source = json.load(response)                           
     response.close()                
     
-    if scrape_type == None:
-        #LIVE
-        #try:       
-            #Sort By Start Time
-            json_source = sorted(json_source,key=lambda x:x['start'])
-            for item in json_source:        
-                if not item['title'].startswith('CSN'):
-                    BUILD_VIDEO_LINK(item)
-        #except:
-            #pass
+    if 'featured' in url:
+        json_source = json_source['showCase']
 
-    elif scrape_type == "ALL":
-        try:
-            for item in json_source['replay']:        
-                BUILD_VIDEO_LINK(item)
-        except:
-            pass
-        try:
-            for item in json_source['showCase']:        
-                BUILD_VIDEO_LINK(item)
-        except:
-            pass
-        try:
-            for item in json_source['spotlight']:        
-                BUILD_VIDEO_LINK(item)
-        except:
-            pass
-
-    else:
-        try:
-            if scrape_type == 'replay':
-                for item in reversed(json_source[scrape_type]):        
-                    BUILD_VIDEO_LINK(item)    
-            else:
-                for item in json_source[scrape_type]:        
-                    BUILD_VIDEO_LINK(item)
-        except:
-            pass
+    for item in json_source:        
+      BUILD_VIDEO_LINK(item)
+    
 
 
 def BUILD_VIDEO_LINK(item):
@@ -240,8 +202,6 @@ def BUILD_VIDEO_LINK(item):
         elif FREE_ONLY == 'false':
             menu_name = '[COLOR='+UPCOMING+']'+menu_name + '[/COLOR]'            
             addDir(menu_name + ' ' + start_date,'/disabled',999,imgurl,FANART,None,False,info)
-
-
         
     
 
