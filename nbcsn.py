@@ -56,7 +56,6 @@ def GET_ALL_SPORTS():
 def SCRAPE_VIDEOS(url,scrape_type=None):
     xbmc.log(url)
     req = urllib2.Request(url)
-    #req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36')
     req.add_header('Connection', 'keep-alive')
     req.add_header('Accept', '*/*')
     req.add_header('User-Agent', UA_NBCSN)
@@ -67,9 +66,14 @@ def SCRAPE_VIDEOS(url,scrape_type=None):
     response = urllib2.urlopen(req)    
     json_source = json.load(response)                           
     response.close()                
-    
+
     if 'featured' in url:
         json_source = json_source['showCase']
+
+    if 'live-upcoming' not in url:
+        json_source = sorted(json_source, key=lambda k: k['start'], reverse = True)
+    else:
+        json_source = sorted(json_source, key=lambda k: k['start'], reverse = False)
 
     for item in json_source:        
       BUILD_VIDEO_LINK(item)
@@ -282,6 +286,7 @@ def SIGN_STREAM(stream_url, stream_name, stream_icon):
             print "RELAY STATE:"
             print relay_state
 
+            
             if saml_response == '' and relay_state == '':
                 msg = "Please verify that your username and password are correct"
                 dialog = xbmcgui.Dialog() 
@@ -293,7 +298,7 @@ def SIGN_STREAM(stream_url, stream_name, stream_icon):
                 ok = dialog.ok('Captcha Found', msg)
                 return
 
-            adobe.POST_ASSERTION_CONSUMER_SERVICE(saml_response,relay_state)
+            adobe.POST_ASSERTION_CONSUMER_SERVICE(saml_response,relay_state)            
             adobe.POST_SESSION_DEVICE(signed_requestor_id)    
 
 

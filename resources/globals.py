@@ -368,16 +368,16 @@ elif PROVIDER == 'Bright House':
 elif PROVIDER == 'Frontier':
     MSO_ID = 'FRONTIER'
 
-IDP_URL = 'https://sp.auth.adobe.com/adobe-services/1.0/authenticate/saml?domain_name=adobe.com&noflash=true&mso_id='+MSO_ID+'&requestor_id=nbcsports&no_iframe=true&client_type=iOS&client_version=1.9.2&redirect_url=http://adobepass.ios.app/'           
+IDP_URL = 'https://sp.auth.adobe.com/adobe-services/authenticate/saml?domain_name=adobe.com&noflash=true&mso_id='+MSO_ID+'&requestor_id=nbcsports&no_iframe=true&client_type=iOS&client_version=1.10.1&redirect_url=http://adobepass.ios.app/'
 ORIGIN = ''
 REFERER = ''
 
 
 #User Agents
-UA_IPHONE = 'Mozilla/5.0 (iPhone; CPU iPhone OS 8_4 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Mobile/12H143'
+UA_IPHONE = 'Mozilla/5.0 (iPhone; CPU iPhone OS 10_0_2 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) Mobile/14A456'
 UA_PC = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.81 Safari/537.36'
-UA_ADOBE_PASS = 'AdobePassNativeClient/1.9 (iPhone; U; CPU iPhone OS 8.4 like Mac OS X; en-us)'
-UA_NBCSN = 'AppleCoreMedia/1.0.0.12H143 (iPhone; U; CPU OS 8_4 like Mac OS X; en_us)'
+UA_ADOBE_PASS = 'AdobePassNativeClient/1.10.1 (iPhone; U; CPU iPhone OS 10.0.2 like Mac OS X; en-us)'
+UA_NBCSN = 'AppleCoreMedia/1.0.0.14A456 (iPhone; U; CPU OS 10_0_2 like Mac OS X; en_us)'
 
 
 #Create Random Device ID and save it to a file
