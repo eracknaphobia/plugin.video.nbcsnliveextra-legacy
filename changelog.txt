@@ -1,3 +1,6 @@
+2016.10.19.2
+- Fixed repo bug
+
 2016.10.19
 - Fixed Comcast (xfinity) login
 - Updated user agents
