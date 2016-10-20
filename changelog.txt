@@ -1,3 +1,7 @@
+2016.10.20
+- Attempt to fix no audio in streams (legacy streams are used if available)
+- Added Playstation Vue to the providers list
+
 2016.10.19.2
 - Fixed repo bug
 

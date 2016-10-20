@@ -23,6 +23,7 @@ from resources.providers.optimum import OPTIMUM
 from resources.providers.cox import COX
 from resources.providers.bright_house import BRIGHT_HOUSE
 from resources.providers.frontier import FRONTIER
+from resources.providers.playstation_vue import PLAYSTATION_VUE
 
 
 def CATEGORIES():           
@@ -82,17 +83,34 @@ def SCRAPE_VIDEOS(url,scrape_type=None):
 
 def BUILD_VIDEO_LINK(item):
     url = ''    
+    #Use the ottStreamUrl (v3) until sound is fixed for newer (v4) streams in kodi
     try:      
-        url = item['iosStreamUrl']  
+        #url = item['iosStreamUrl']          
+        url = item['ottStreamUrl']  
+        if url == '' and item['iosStreamUrl'] != '':
+            url = item['iosStreamUrl']          
+        '''
         if CDN == 1 and item['backupUrl'] != '':
             url = item['backupUrl']
+        '''
     except:
         try:
-            if item['videoSources']:
+            if item['videoSources']:                
+                '''
                 if 'iosStreamUrl' in item['videoSources'][0]:
                     url =  item['videoSources'][0]['iosStreamUrl']
                     if CDN == 1 and item['videoSources'][0]['backupUrl'] != '':
                         url = item['backupUrl']
+                '''
+                if 'ottStreamUrl' in item['videoSources'][0]:
+                    url =  item['videoSources'][0]['ottStreamUrl']
+                    
+                    if url == '' and item['iosStreamUrl'] != '':
+                        url = item['iosStreamUrl']    
+                    '''
+                    if CDN == 1 and item['videoSources'][0]['backupUrl'] != '':
+                        url = item['backupUrl']
+                    '''
         except:
             pass
         pass
@@ -235,8 +253,11 @@ def SIGN_STREAM(stream_url, stream_name, stream_icon):
         provider = BRIGHT_HOUSE()
     elif MSO_ID == 'FRONTIER':
         provider = FRONTIER()
+    elif MSO_ID == 'sony_auth-gateway_net':
+        provider = PLAYSTATION_VUE()
 
     #provider = SET_PROVIDER()
+    xbmc.log("PROVIDER ="+str(PROVIDER))
 
     if provider != None:
         #stream_url = AUTHORIZE_STREAM(provider)
@@ -249,9 +270,9 @@ def SIGN_STREAM(stream_url, stream_name, stream_icon):
             
             for cookie in cj:                
                 if cookie.name == 'BIGipServerAdobe_Pass_Prod':
-                    print cookie.name
-                    print cookie.expires
-                    print cookie.is_expired()
+                    xbmc.log(str(cookie.name))
+                    xbmc.log(str(cookie.expires))
+                    xbmc.log(str(cookie.is_expired()))
                     expired_cookies = cookie.is_expired()
         except:
             pass
@@ -264,10 +285,10 @@ def SIGN_STREAM(stream_url, stream_name, stream_icon):
             last_provider = provider_file.readline()
             provider_file.close()
 
-        print "Did cookies expire? " + str(expired_cookies)
-        print "Does the auth token file exist? " + str(os.path.isfile(auth_token_file))
-        print "Does the last provider match the current provider? " + str(last_provider == MSO_ID)
-        print "Who was the last provider? " +str(last_provider)
+        xbmc.log("Did cookies expire? " + str(expired_cookies))
+        xbmc.log("Does the auth token file exist? " + str(os.path.isfile(auth_token_file)))
+        xbmc.log("Does the last provider match the current provider? " + str(last_provider == MSO_ID))
+        xbmc.log("Who was the last provider? " +str(last_provider))
                 
         resource_id = GET_RESOURCE_ID()    
         signed_requestor_id = GET_SIGNED_REQUESTOR_ID() 
@@ -281,10 +302,10 @@ def SIGN_STREAM(stream_url, stream_name, stream_icon):
             var_3 = HTMLParser.HTMLParser().unescape(var_3)
             saml_response, relay_state = provider.LOGIN(var_1, var_2, var_3)
             #Error logging in. Abort! Abort!
-            print "SAML RESPONSE:"
-            print saml_response
-            print "RELAY STATE:"
-            print relay_state
+            xbmc.log("SAML RESPONSE:")
+            xbmc.log(saml_response)
+            xbmc.log("RELAY STATE:")
+            xbmc.log(relay_state)
 
             
             if saml_response == '' and relay_state == '':

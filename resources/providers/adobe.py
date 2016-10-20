@@ -60,7 +60,7 @@ class ADOBE():
                             "Accept-Encoding": "gzip, deflate",
                             "Accept-Language": "en-us",
                             "Content-Type": "application/x-www-form-urlencoded",
-                            "Proxy-Connection": "keep-alive",
+                            #"Proxy-Connection": "keep-alive",
                             "Connection": "keep-alive",
                             "Origin": ORIGIN,
                             "Referer": REFERER,
@@ -74,12 +74,12 @@ class ADOBE():
 
         
         response, content = http.request(url, 'POST', headers=headers, body=body)        
-        print 'POST_ASSERTION_CONSUMER_SERVICE------------------------------------------------'
-        print headers
-        print body
-        print response
-        print content
-        print '-------------------------------------------------------------------------------'
+        xbmc.log('POST_ASSERTION_CONSUMER_SERVICE------------------------------------------------')
+        xbmc.log(str(headers))
+        xbmc.log(str(body))
+        xbmc.log(str(response))
+        xbmc.log(str(content))
+        xbmc.log('-------------------------------------------------------------------------------')
         
     
 
