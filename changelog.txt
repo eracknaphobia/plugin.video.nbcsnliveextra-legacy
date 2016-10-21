@@ -1,3 +1,6 @@
+2016.10.21
+- Added Summit Broadband to the available providers
+
 2016.10.20
 - Attempt to fix no audio in streams (legacy streams are used if available)
 - Added Playstation Vue to the providers list

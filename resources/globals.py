@@ -252,63 +252,6 @@ def CLEAR_SAVED_DATA():
     ADDON.setSetting(id='clear_data', value='false')   
 
 
-"""
-def SET_PROVIDER():
-    provider = None
-    if MSO_ID == 'Dish':
-        provider = DISH()
-    elif MSO_ID == 'TWC':
-        provider = TWC()
-    elif MSO_ID == 'Comcast_SSO':
-        provider = COMCAST()
-
-    return provider
-
-def AUTHORIZE_STREAM(provider):    
-    adobe = ADOBE()
-    expired_cookies = True
-    try:
-        cj = cookielib.LWPCookieJar()
-        cj.load(os.path.join(ADDON_PATH_PROFILE, 'cookies.lwp'),ignore_discard=True)
-        
-        for cookie in cj:
-            #print cookie.name
-            #print cookie.expires
-            #print cookie.is_expired()
-            if cookie.name == 'BIGipServerAdobe_Pass_Prod':
-                expired_cookies = cookie.is_expired()
-    except:
-        pass
-
-    resource_id = GET_RESOURCE_ID()    
-    signed_requestor_id = GET_SIGNED_REQUESTOR_ID() 
-    auth_token_file = os.path.join(ADDON_PATH_PROFILE, 'auth.token')        
-    
-    last_provider = ''
-    fname = os.path.join(ADDON_PATH_PROFILE, 'provider.info')
-    if os.path.isfile(fname):                
-        provider_file = open(fname,'r') 
-        last_provider = provider_file.readline()
-        provider_file.close()
-
-    #If cookies are expired or auth token is not present run login or provider has changed
-    if expired_cookies or not os.path.isfile(auth_token_file) or (last_provider != MSO_ID):
-        #saml_request, relay_state, saml_submit_url = adobe.GET_IDP()            
-        var_1, var_2, var_3 = provider.GET_IDP()            
-        saml_response, relay_state = provider.LOGIN(var_1, var_2, var_3)
-        adobe.POST_ASSERTION_CONSUMER_SERVICE(saml_response,relay_state)
-        adobe.POST_SESSION_DEVICE(signed_requestor_id)    
-
-
-    authz = adobe.POST_AUTHORIZE_DEVICE(resource_id,signed_requestor_id)        
-    media_token = adobe.POST_SHORT_AUTHORIZED(signed_requestor_id,authz)
-    stream_url = adobe.TV_SIGN(media_token,resource_id, stream_url)
-
-    return stream_url
-    """
-
-
-
 
 # KODI ADDON GLOBALS
 ADDON_HANDLE = int(sys.argv[1])
@@ -352,39 +295,11 @@ provider_dictionary = { "Bright House" : "Brighthouse",
                         "Frontier" : "FRONTIER",    
                         "Optimum" : "Cablevision",
                         "Playstation Vue" : "sony_auth-gateway_net",
+                        "Summit Broadband" : "summit-broadband",
                         "Time Warner Cable" : "TWC",
                         "Verizon" : "Verizon"
                     }
 
-'''
-print 'PROVIDER!!!'
-print PROVIDER
-MSO_ID = ''
-if PROVIDER == 'Cable One':
-    MSO_ID = 'auth_cableone_net'
-elif PROVIDER == 'Charter':    
-    MSO_ID = 'Charter_Direct'  
-elif PROVIDER == 'Comcast (xfinity)':    
-    MSO_ID = 'Comcast_SSO'  
-elif PROVIDER == 'Cox':
-    MSO_ID = 'Cox' 
-elif PROVIDER == 'Dish Network':
-    MSO_ID = 'Dish' 
-elif PROVIDER == 'Direct TV':
-    MSO_ID = 'DTV'    
-elif PROVIDER == 'Optimum':
-    MSO_ID = 'Cablevision'
-elif PROVIDER == 'Playstation Vue':
-    MSO_ID = 'sony_auth-gateway_net'
-elif PROVIDER == 'Time Warner Cable':
-    MSO_ID = 'TWC'
-elif PROVIDER == 'Verizon':
-    MSO_ID = 'Verizon'
-elif PROVIDER == 'Bright House':
-    MSO_ID = 'Brighthouse'
-elif PROVIDER == 'Frontier':
-    MSO_ID = 'FRONTIER'
-'''
 
 MSO_ID = provider_dictionary[PROVIDER]
 IDP_URL = 'https://sp.auth.adobe.com/adobe-services/authenticate/saml?domain_name=adobe.com&noflash=true&mso_id='+MSO_ID+'&requestor_id=nbcsports&no_iframe=true&client_type=iOS&client_version=1.10.1&redirect_url=http://adobepass.ios.app/'

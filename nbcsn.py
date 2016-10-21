@@ -24,6 +24,7 @@ from resources.providers.cox import COX
 from resources.providers.bright_house import BRIGHT_HOUSE
 from resources.providers.frontier import FRONTIER
 from resources.providers.playstation_vue import PLAYSTATION_VUE
+from resources.providers.summit_broadband import SUMMIT_BROADBAND
 
 
 def CATEGORIES():           
@@ -255,6 +256,8 @@ def SIGN_STREAM(stream_url, stream_name, stream_icon):
         provider = FRONTIER()
     elif MSO_ID == 'sony_auth-gateway_net':
         provider = PLAYSTATION_VUE()
+    elif MSO_ID == 'summit-broadband':
+        provider = SUMMIT_BROADBAND()
 
     #provider = SET_PROVIDER()
     xbmc.log("PROVIDER ="+str(PROVIDER))
